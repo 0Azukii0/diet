@@ -17,7 +17,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.network.chat.TextColor;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
@@ -26,7 +25,6 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +67,7 @@ public class ModClientEvents {
         Identifier cacheKey = BuiltInRegistries.ITEM.getKey(stack.getItem());
         List<Component> cached = TooltipHandler.CACHE.get(cacheKey);
         if (cached == null) {
-            cached = TooltipHandler.buildTooltipLines(stack);
+            cached = TooltipHandler.buildFoodCategoryTooltipLines(stack);
             TooltipHandler.CACHE.put(cacheKey, cached);
         }
 
@@ -85,7 +83,7 @@ public class ModClientEvents {
     public static class TooltipHandler {
         public static final Map<Identifier, List<Component>> CACHE = new HashMap<>();
 
-        public static List<Component> buildTooltipLines(ItemStack stack) {
+        public static List<Component> buildFoodCategoryTooltipLines(ItemStack stack) {
             // Try to get from client cache first (pre-calculated, no lag)
             ClientFoodProfileCache clientCache = DietClientMod.getClientDietCache();
             FoodProfile profile = null;
@@ -110,12 +108,12 @@ public class ModClientEvents {
                 if (value <= 0.0f) {
                     continue;
                 }
-                lines.add(createDietLine(category.getName(), value, category.getColor()));
+                lines.add(createFoodCategoryLine(category.getName(), value, category.getColor()));
             }
             return lines;
         }
 
-        private static Component createDietLine(String translationKey, float value, int color) {
+        private static Component createFoodCategoryLine(String translationKey, float value, int color) {
             MutableComponent line = Component.literal("");
             line.append(Component.literal(" - ").withStyle(ChatFormatting.GRAY));
             line.append(Component.translatable(translationKey).append(": ").withStyle(Style.EMPTY.withColor(color)));
@@ -123,4 +121,6 @@ public class ModClientEvents {
             return line;
         }
     }
+
+
 }

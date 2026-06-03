@@ -103,7 +103,7 @@ public class ModEvents {
 
         ModFoodData data = player.getData(ModAttachments.DIET_DATA);
         FoodSyncManager.initializeIfNeeded(serverPlayer, data);
-        FoodEffectsManager.apply(serverPlayer, data);
+        //FoodEffectsManager.apply(serverPlayer, data);
 
         FoodSystemSettings settings = FoodRegistry.getSettings();
         long decayIntervalMs = settings.decayIntervalMillis();
@@ -141,7 +141,7 @@ public class ModEvents {
         // Reset decay timer to current time to prevent decay during offline time
         data.setLastDecayTimeMs(System.currentTimeMillis());
 
-        FoodEffectsManager.apply(serverPlayer, data);
+        //FoodEffectsManager.apply(serverPlayer, data);
         FoodSyncManager.syncIfNeeded(serverPlayer, data, true);
 
         // Sync diet profiles from server to client

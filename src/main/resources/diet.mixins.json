@@ -2,7 +2,11 @@
   "required": true,
   "package": "com.azukii.diet.mixin",
   "compatibilityLevel": "JAVA_25",
-  "mixins": [],
+  "mixins": [
+    "BlockMixin",
+    "LivingEntityMixin",
+    "PlayerMixin"
+  ],
   "injectors": {
     "defaultRequire": 1
   },
