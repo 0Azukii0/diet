@@ -1,15 +1,19 @@
 package com.azukii.diet.activity;
 
+import com.azukii.diet.attachments.ModAttachments;
 import com.azukii.diet.data.FoodCategories;
-import com.azukii.diet.mixin.PlayerActivitiesAccess;
+import com.azukii.diet.data.FoodRegistry;
+import com.azukii.diet.data.PlayerActivityData;
+import com.azukii.diet.profile.FoodProfile;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicReference;
-
-import static java.lang.Math.max;
+import java.util.Optional;
 
 public class ActivityEvents {
     public static float exhaustionReductionShortSheen(Player player, ActivitiesCategories source) {
@@ -22,28 +26,19 @@ public class ActivityEvents {
     }
 
     public static float exhaustionReductionLongSheen(Player player, ActivitiesCategories source, int cooldown) {
-        ((PlayerActivitiesAccess) player).mindful_eating$setHurtOrHeal(source == ActivitiesCategories.HURT || source == ActivitiesCategories.HEAL);
+        PlayerActivityData data = player.getData(ModAttachments.PLAYER_ACTIVITY);
+        data.setHurtOrHeal(source == ActivitiesCategories.HURT || source == ActivitiesCategories.HEAL);
+        Holder.Reference<Item> item = BuiltInRegistries.ITEM.get(data.getLastFood()).orElse(Items.COOKED_BEEF.builtInRegistryHolder());
+        ItemStack stack = new ItemStack(item);
+        FoodProfile profile = FoodRegistry.getProfile(stack);
 
-        if (!MEConfig.COMMON.proportionalDiet.get()) {
-            for (FoodCategories group : FoodCategories.VALUES) {
-                for (String configGroup : MEConfig.COMMON.foodGroupExhaustion[source.ordinal()].get().split("/")) {
-                    if (group.getName().equals(configGroup)) {
-                        ((PlayerActivitiesAccess) player).mindful_eating$setSheenCooldown(cooldown);
-                        return -MEConfig.COMMON.exhaustionReduction.get().floatValue();
-                    }
-                }
+        for (FoodCategories category : FoodCategories.VALUES) {
+            float val = profile.get(category);
+            if (val != 0.0F) {
+                data.setSheenCooldown(cooldown);
+                return 0.75F;
             }
-
-            return 0.0F;
-        } else {
-            AtomicReference<Float> percentage = new AtomicReference<>(0.0F);
-            DietComponents.DIET_TRACKER.maybeGet(player).ifPresent(tracker -> {
-                for (String configGroup : MEConfig.COMMON.foodGroupExhaustion[source.ordinal()].get().split("/"))
-                    percentage.set(tracker.getValue(configGroup));
-            });
-            if (percentage.get() > 0.0F)
-                ((PlayerActivitiesAccess) player).mindful_eating$setSheenCooldown(cooldown);
-            return max(-percentage.get(), 1.0F);
         }
+        return 0.0F;
     }
 }

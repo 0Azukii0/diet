@@ -5,7 +5,6 @@ import com.azukii.diet.attachments.ModAttachments;
 import com.azukii.diet.data.FoodRegistry;
 import com.azukii.diet.data.FoodDataLoader;
 import com.azukii.diet.data.ModFoodData;
-import com.azukii.diet.effect.FoodEffectsManager;
 import com.azukii.diet.network.FoodSyncManager;
 import com.azukii.diet.network.FoodProfileSyncPacket;
 import com.azukii.diet.network.FoodSyncPacket;
@@ -87,7 +86,7 @@ public class ModEvents {
         }
 
         ServerPlayer serverPlayer = (ServerPlayer) player;
-        ModFoodData data = serverPlayer.getData(ModAttachments.DIET_DATA);
+        ModFoodData data = serverPlayer.getData(ModAttachments.FOOD_DATA);
         FoodSyncManager.initializeIfNeeded(serverPlayer, data);
         data.add(profile, FoodRegistry.getMaxValues());
         data.setLastDecayTimeMs(System.currentTimeMillis());
@@ -101,7 +100,7 @@ public class ModEvents {
             return;
         }
 
-        ModFoodData data = player.getData(ModAttachments.DIET_DATA);
+        ModFoodData data = player.getData(ModAttachments.FOOD_DATA);
         FoodSyncManager.initializeIfNeeded(serverPlayer, data);
         //FoodEffectsManager.apply(serverPlayer, data);
 
@@ -135,7 +134,7 @@ public class ModEvents {
         // Set server reference for recipe analysis
         FoodRegistry.setServer(serverPlayer.level().getServer());
 
-        ModFoodData data = serverPlayer.getData(ModAttachments.DIET_DATA);
+        ModFoodData data = serverPlayer.getData(ModAttachments.FOOD_DATA);
         FoodSyncManager.initializeIfNeeded(serverPlayer, data);
 
         // Reset decay timer to current time to prevent decay during offline time

@@ -50,7 +50,7 @@ public record FoodSyncPacket(float[] values) implements CustomPacketPayload {
     }
 
     public static void handle(FoodSyncPacket packet, Player player) {
-        ModFoodData data = player.getData(ModAttachments.DIET_DATA);
+        ModFoodData data = player.getData(ModAttachments.FOOD_DATA);
         data.setAll(packet.values());
     }
 }

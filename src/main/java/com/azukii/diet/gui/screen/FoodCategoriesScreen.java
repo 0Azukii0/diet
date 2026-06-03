@@ -107,7 +107,7 @@ public class FoodCategoriesScreen extends Screen {
     }
     private void renderDietBars(GuiGraphicsExtractor graphics, int guiLeft, int guiTop) {
         Player player = Minecraft.getInstance().player;
-        ModFoodData modFoodData = player != null ? player.getData(ModAttachments.DIET_DATA) : null;
+        ModFoodData data = player != null ? player.getData(ModAttachments.FOOD_DATA) : null;
         FoodProfile maxProfile = FoodRegistry.getMaxValues();
 
         int labelX = guiLeft + LABEL_OFFSET_X;
@@ -120,7 +120,7 @@ public class FoodCategoriesScreen extends Screen {
         long i = 0;
         for (FoodCategories category : FoodCategories.VALUES) {
             int barY = Math.round(startY + i * 20);
-            float value = modFoodData != null ? modFoodData.get(category) : 0f;
+            float value = data != null ? data.get(category) : 0f;
             float max = maxProfile.get(category);
             float pct = max > 0f ? Math.clamp(value / max, 0f, 1f) : 0f;
             Component label = Component.translatable(category.getName());
