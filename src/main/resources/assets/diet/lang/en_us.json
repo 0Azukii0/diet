@@ -1,0 +1,11 @@
+{
+  "screen.dietmod.food_categories": "Diet - Food Categories",
+  "screen.dietmod.close": "Close",
+
+  "tooltip.diet.category": "Press §1Shift§r for more Food Information!",
+  "tooltip.diet.category.grain": "Grains",
+  "tooltip.diet.category.protein": "Proteins",
+  "tooltip.diet.category.vegetable": "Vegetables",
+  "tooltip.diet.category.fruit": "Fruits",
+  "tooltip.diet.category.sugar": "Sugars"
+}
