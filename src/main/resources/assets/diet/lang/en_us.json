@@ -7,5 +7,14 @@
   "tooltip.diet.category.protein": "Proteins",
   "tooltip.diet.category.vegetable": "Vegetables",
   "tooltip.diet.category.fruit": "Fruits",
-  "tooltip.diet.category.sugar": "Sugars"
+  "tooltip.diet.category.sugar": "Sugars",
+  "tooltip.diet.action":   "Exhaustion reduction when:",
+  "tooltip.diet.action.swim":   "Swimming",
+  "tooltip.diet.action.sprint": "Sprinting",
+  "tooltip.diet.action.jump":   "Jumping",
+  "tooltip.diet.action.mine":   "Mining",
+  "tooltip.diet.action.attack": "Fighting",
+  "tooltip.diet.action.hurt":   "Taking damage",
+  "tooltip.diet.action.heal":   "Healing",
+  "tooltip.diet.action.effect": "Hunger effect"
 }
