@@ -1,7 +1,6 @@
 package com.azukii.diet.data;
 
 import com.azukii.diet.profile.FoodProfile;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
@@ -40,7 +39,6 @@ public class ModFoodData implements ValueIOSerializable {
             return false;
         }
 
-        System.out.println("ModFoodData.applyDecay");
         boolean changed = false;
         for (FoodCategories category : FoodCategories.VALUES) {
             int idx = category.ordinal();
@@ -154,9 +152,7 @@ public class ModFoodData implements ValueIOSerializable {
     public void deserialize(ValueInput input) {
         for (FoodCategories category : FoodCategories.VALUES) {
             String key = category.name().toLowerCase();
-            if (input.keySet().contains(key)) {
-                values[category.ordinal()] = input.getFloatOr(key, 0);
-            }
+            values[category.ordinal()] = input.getFloatOr(key, 0);
         }
         lastDecayTimeMs = input.keySet().contains("lastDecayTimeMs") ? input.getLongOr("lastDecayTimeMs", 0) : System.currentTimeMillis();
         initialized = input.getBooleanOr("initialized", false);

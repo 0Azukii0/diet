@@ -12,37 +12,13 @@ public class PlayerActivityData implements ValueIOSerializable {
     int sheenCooldown = 0;
     boolean hurtOrHeal = false;
 
-    public Identifier diet$getLastFood() {
+    public Identifier getLastFood() {
         Identifier lastfood = this.lastFood;
         if (lastfood == null || !BuiltInRegistries.ITEM.containsKey(lastfood)) {
             lastfood = BuiltInRegistries.ITEM.getKey(Items.COOKED_BEEF);
-            diet$setLastFood(lastfood);
+            setLastFood(lastfood);
         }
         return lastfood;
-    }
-
-    public void diet$setLastFood(Identifier lastFood) {
-        this.lastFood = lastFood;
-    }
-
-    public int diet$getSheenCooldown() {
-        return this.sheenCooldown;
-    }
-
-    public void diet$setSheenCooldown(int cooldown) {
-        this.sheenCooldown = cooldown;
-    }
-
-    public boolean diet$getHurtOrHeal() {
-        return this.hurtOrHeal;
-    }
-
-    public void diet$setHurtOrHeal(boolean hurtOrHeal) {
-        this.hurtOrHeal = hurtOrHeal;
-    }
-
-    public Identifier getLastFood() {
-        return this.lastFood;
     }
 
     public void setLastFood(Identifier lastFood) {
@@ -67,9 +43,9 @@ public class PlayerActivityData implements ValueIOSerializable {
 
     @Override
     public void serialize(ValueOutput output) {
-        output.putBoolean("HurtOrHeal", diet$getHurtOrHeal());
-        output.putString("LastFoodEaten", diet$getLastFood().toString());
-        output.putInt("SheenCooldown", diet$getSheenCooldown());
+        output.putBoolean("HurtOrHeal", getHurtOrHeal());
+        output.putString("LastFoodEaten", getLastFood().toString());
+        output.putInt("SheenCooldown", getSheenCooldown());
     }
 
     @Override
@@ -79,8 +55,8 @@ public class PlayerActivityData implements ValueIOSerializable {
             lastFood = BuiltInRegistries.ITEM.getKey(Items.COOKED_BEEF);
         }
 
-        diet$setLastFood(lastFood);
-        diet$setHurtOrHeal(input.getBooleanOr("HurtOrHeal", false));
-        diet$setSheenCooldown(input.getIntOr("SheenCooldown", 0));
+        setLastFood(lastFood);
+        setHurtOrHeal(input.getBooleanOr("HurtOrHeal", false));
+        setSheenCooldown(input.getIntOr("SheenCooldown", 0));
     }
 }

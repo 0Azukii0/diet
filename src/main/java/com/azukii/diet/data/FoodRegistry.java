@@ -1,9 +1,9 @@
 package com.azukii.diet.data;
 
-import com.azukii.diet.system.RecipeNutrientAnalyzer;
-import com.azukii.diet.system.FoodSystemSettings;
 import com.azukii.diet.profile.FoodProfile;
 import com.azukii.diet.profile.FoodProfileCache;
+import com.azukii.diet.system.FoodSystemSettings;
+import com.azukii.diet.system.RecipeNutrientAnalyzer;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import net.minecraft.core.component.DataComponents;
@@ -43,7 +43,6 @@ public final class FoodRegistry {
 
     public static void setServer(MinecraftServer server) {
         currentServer = server;
-        if (server != null && server == currentServer && persistentCache != null) {return;}
         RecipeNutrientAnalyzer.setServer(server);
         if (server != null) {
             PROFILE_CACHE.invalidateAll();

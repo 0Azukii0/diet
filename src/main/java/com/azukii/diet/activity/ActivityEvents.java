@@ -25,17 +25,27 @@ public class ActivityEvents {
     public static float exhaustionReductionLongSheen(Player player, ActivitiesCategories source, int cooldown) {
         PlayerActivityData data = player.getData(ModAttachments.PLAYER_ACTIVITY);
         data.setHurtOrHeal(source == ActivitiesCategories.HURT || source == ActivitiesCategories.HEAL);
-        Holder.Reference<Item> item = BuiltInRegistries.ITEM.get(data.getLastFood()).orElse(Items.COOKED_BEEF.builtInRegistryHolder());
-        ItemStack stack = new ItemStack(item);
-        FoodProfile profile = FoodRegistry.getProfile(stack);
 
-        for (FoodCategories category : FoodCategories.VALUES) {
-            float val = profile.get(category);
-            if (val != 0.0F) {
-                data.setSheenCooldown(cooldown);
-                return 0.75F;
-            }
+        Holder.Reference<Item> item = BuiltInRegistries.ITEM.get(data.getLastFood()).orElse(Items.COOKED_BEEF.builtInRegistryHolder());
+        FoodProfile profile = FoodRegistry.getProfile(new ItemStack(item));
+
+        float ratio = computeRatio(profile, source);
+        if (ratio > 0.0f) {
+            data.setSheenCooldown(cooldown);
         }
-        return 0.0F;
+        return ratio;
+    }
+
+    private static float computeRatio(FoodProfile profile, ActivitiesCategories source) {
+        float total = 0.0f;
+        for (FoodCategories category : FoodCategories.VALUES) {
+            total += profile.get(category);
+        }
+        if (total <= 0.0f) {
+            return 0.0f;
+        }
+
+        float relevant = profile.get(source.getRelatedCategory());
+        return Math.min(relevant / total, 0.75f);
     }
 }
