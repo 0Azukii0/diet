@@ -131,18 +131,22 @@ public class ClientFoodProfileCache {
     /**
      * Starts background calculation of all food items (client-side)
      */
-    public CompletableFuture<Void> calculateAsync(FoodSystemSettings settings) {
+    public void calculateAsync(FoodSystemSettings settings) {
+        List<Item> foodItems = BuiltInRegistries.ITEM.stream()
+                .filter(item -> item.components().get(DataComponents.FOOD) != null)
+                .toList();
+
         if (isCalculating.getAndSet(true)) {
             LOGGER.warn("[DIET CLIENT] Calculation already in progress");
-            return CompletableFuture.completedFuture(null);
+            CompletableFuture.completedFuture(null);
+            return;
         }
 
-        return CompletableFuture.runAsync(() -> {
+        CompletableFuture.runAsync(() -> {
             try {
                 LOGGER.info("[DIET CLIENT] Starting background calculation of diet profiles...");
                 long startTime = System.currentTimeMillis();
 
-                List<Item> foodItems = collectFoodItems();
                 Set<Identifier> currentItems = new HashSet<>();
                 AtomicInteger calculated = new AtomicInteger(0);
                 AtomicInteger cached = new AtomicInteger(0);
@@ -239,12 +243,13 @@ public class ClientFoodProfileCache {
      */
     private List<Item> collectFoodItems() {
         List<Item> foodItems = new ArrayList<>();
+
         for (Item item : BuiltInRegistries.ITEM) {
-            ItemStack stack = new ItemStack(item);
-            if (stack.get(DataComponents.FOOD) != null) {
+            if (item.components().get(DataComponents.FOOD) != null) {
                 foodItems.add(item);
             }
         }
+
         return foodItems;
     }
 

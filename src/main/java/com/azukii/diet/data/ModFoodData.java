@@ -40,6 +40,7 @@ public class ModFoodData implements ValueIOSerializable {
             return false;
         }
 
+        System.out.println("ModFoodData.applyDecay");
         boolean changed = false;
         for (FoodCategories category : FoodCategories.VALUES) {
             int idx = category.ordinal();
@@ -142,12 +143,11 @@ public class ModFoodData implements ValueIOSerializable {
 
     @Override
     public void serialize(ValueOutput output) {
-        CompoundTag tag = new CompoundTag();
         for (FoodCategories category : FoodCategories.VALUES) {
-            tag.putFloat(category.name().toLowerCase(), values[category.ordinal()]);
+            output.putFloat(category.name().toLowerCase(), values[category.ordinal()]);
         }
-        tag.putLong("lastDecayTimeMs", lastDecayTimeMs);
-        tag.putBoolean("initialized", initialized);
+        output.putLong("lastDecayTimeMs", lastDecayTimeMs);
+        output.putBoolean("initialized", initialized);
     }
 
     @Override
@@ -158,8 +158,7 @@ public class ModFoodData implements ValueIOSerializable {
                 values[category.ordinal()] = input.getFloatOr(key, 0);
             }
         }
-        lastDecayTimeMs = input.keySet().contains("lastDecayTimeMs")
-                ? input.getLongOr("lastDecayTimeMs", 0) : System.currentTimeMillis();
+        lastDecayTimeMs = input.keySet().contains("lastDecayTimeMs") ? input.getLongOr("lastDecayTimeMs", 0) : System.currentTimeMillis();
         initialized = input.getBooleanOr("initialized", false);
     }
 }

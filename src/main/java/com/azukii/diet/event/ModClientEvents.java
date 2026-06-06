@@ -7,6 +7,7 @@ import com.azukii.diet.data.FoodRegistry;
 import com.azukii.diet.gui.screen.FoodCategoriesScreen;
 import com.azukii.diet.profile.ClientFoodProfileCache;
 import com.azukii.diet.profile.FoodProfile;
+import com.mojang.datafixers.util.Either;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
@@ -20,8 +21,10 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
@@ -52,13 +55,12 @@ public class ModClientEvents {
     }
 
     @SubscribeEvent
-    public static void onTooltip(ItemTooltipEvent event) {
+    public static void onGatherTooltip(RenderTooltipEvent.GatherComponents event) {
         ItemStack stack = event.getItemStack();
         if (stack.isEmpty()) {
             return;
         }
 
-        // Check if this is a food item
         boolean isFood = stack.getItem().components().get(DataComponents.FOOD) != null;
         if (!isFood) {
             return;
@@ -71,12 +73,16 @@ public class ModClientEvents {
             TooltipHandler.CACHE.put(cacheKey, cached);
         }
 
-        if (!cached.isEmpty()) {
-            if (Minecraft.getInstance().hasShiftDown()) {
-                event.getToolTip().addAll(cached);
-            } else {
-                event.getToolTip().add(Component.translatable("tooltip.diet.category").withStyle(ChatFormatting.WHITE));
+        if (cached.isEmpty()) {
+            return;
+        }
+
+        if (Minecraft.getInstance().hasShiftDown()) {
+            for (Component c : cached) {
+                event.getTooltipElements().add(Either.left(c));
             }
+        } else {
+            event.getTooltipElements().add(Either.left(Component.translatable("tooltip.diet.category").withStyle(ChatFormatting.WHITE)));
         }
     }
 
@@ -121,6 +127,4 @@ public class ModClientEvents {
             return line;
         }
     }
-
-
 }

@@ -7,13 +7,10 @@ import com.azukii.diet.data.PlayerActivityData;
 import com.azukii.diet.profile.FoodProfile;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-
-import java.util.Optional;
 
 public class ActivityEvents {
     public static float exhaustionReductionShortSheen(Player player, ActivitiesCategories source) {
