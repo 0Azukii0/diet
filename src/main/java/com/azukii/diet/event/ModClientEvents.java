@@ -10,6 +10,7 @@ import com.azukii.diet.data.PlayerActivityData;
 import com.azukii.diet.gui.screen.FoodCategoriesScreen;
 import com.azukii.diet.profile.ClientFoodProfileCache;
 import com.azukii.diet.profile.FoodProfile;
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -66,6 +67,7 @@ public class ModClientEvents {
         if (mc.player == null || mc.level == null) return;
 
         Player player = mc.player;
+        if (player.getAbilities().instabuild) return;
 
         // Food item in hand
         ItemStack mainHand = player.getMainHandItem();
@@ -74,11 +76,14 @@ public class ModClientEvents {
 
         if (holdingFood) TooltipHandler.hudTimer = 5f;
 
-        // Lastfood has changed
+        // Last food has changed
         Identifier currentLastFood = player.getData(ModAttachments.PLAYER_ACTIVITY).getLastFood();
         if (!currentLastFood.equals(TooltipHandler.lastFoodDisplayed)) {
+            boolean isFirstInit = TooltipHandler.lastFoodDisplayed == null;
             TooltipHandler.lastFoodDisplayed = currentLastFood;
-            TooltipHandler.hudTimer = 5f;
+            if (!isFirstInit) {
+                TooltipHandler.hudTimer = 5f;
+            }
         }
 
         if (TooltipHandler.hudTimer > 0f) {
@@ -111,7 +116,7 @@ public class ModClientEvents {
             baseY -= 10;
         }
 
-        int x = screenWidth / 2 + 70;
+        int x = screenWidth / 2 + 75;
         int y = baseY;
 
         GuiGraphicsExtractor graphics = event.getGuiGraphics();
@@ -227,7 +232,7 @@ public class ModClientEvents {
             MutableComponent line = Component.literal("");
             line.append(Component.literal(" - ").withStyle(ChatFormatting.GRAY));
             line.append(Component.translatable(action.getTranslationKey()).append(": ").withStyle(ChatFormatting.GRAY));
-            line.append(Component.literal(" -" + percent + "%").withStyle(ChatFormatting.GREEN));
+            line.append(Component.literal("-" + percent + "%").withStyle(ChatFormatting.GREEN));
             return line;
         }
     }

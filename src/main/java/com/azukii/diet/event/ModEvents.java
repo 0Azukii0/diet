@@ -5,9 +5,11 @@ import com.azukii.diet.attachments.ModAttachments;
 import com.azukii.diet.data.FoodRegistry;
 import com.azukii.diet.data.FoodDataLoader;
 import com.azukii.diet.data.ModFoodData;
+import com.azukii.diet.data.PlayerActivityData;
 import com.azukii.diet.network.FoodSyncManager;
 import com.azukii.diet.network.FoodProfileSyncPacket;
 import com.azukii.diet.network.FoodSyncPacket;
+import com.azukii.diet.network.PlayerActivitySyncPacket;
 import com.azukii.diet.system.FoodSystemSettings;
 import com.azukii.diet.profile.FoodProfile;
 import net.minecraft.core.component.DataComponents;
@@ -22,6 +24,7 @@ import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
+import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import net.neoforged.neoforge.resource.ListenerKey;
@@ -47,6 +50,14 @@ public class ModEvents {
                 FoodSyncPacket.STREAM_CODEC,
                 (packet, context) -> context.enqueueWork(() ->
                         FoodSyncPacket.handle(packet, context.player())
+                )
+        );
+
+        registrar.playToClient(
+                PlayerActivitySyncPacket.TYPE,
+                PlayerActivitySyncPacket.STREAM_CODEC,
+                (packet, context) -> context.enqueueWork(() ->
+                        PlayerActivitySyncPacket.handle(packet, context.player())
                 )
         );
 
@@ -142,6 +153,10 @@ public class ModEvents {
 
         //FoodEffectsManager.apply(serverPlayer, data);
         FoodSyncManager.syncIfNeeded(serverPlayer, data, true);
+
+        // Sync for last food eaten HUD
+        PlayerActivityData activityData = serverPlayer.getData(ModAttachments.PLAYER_ACTIVITY);
+        PacketDistributor.sendToPlayer(serverPlayer, new PlayerActivitySyncPacket(activityData.getLastFood()));
 
         // Sync diet profiles from server to client
         FoodSyncManager.syncDietProfilesToClient(serverPlayer);

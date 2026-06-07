@@ -8,9 +8,9 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
 
 public class PlayerActivityData implements ValueIOSerializable {
-    Identifier lastFood = BuiltInRegistries.ITEM.getKey(Items.COOKED_BEEF);
-    int sheenCooldown = 0;
-    boolean hurtOrHeal = false;
+    private Identifier lastFood = BuiltInRegistries.ITEM.getKey(Items.COOKED_BEEF);
+    private int sheenCooldown = 0;
+    private boolean hurtOrHeal = false;
 
     public Identifier getLastFood() {
         Identifier lastfood = this.lastFood;

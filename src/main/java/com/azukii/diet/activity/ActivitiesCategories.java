@@ -13,7 +13,6 @@ public enum ActivitiesCategories {
     EFFECT(FoodCategories.SUGAR,     "tooltip.diet.action.effect");
 
     public static final ActivitiesCategories[] VALUES = values();
-
     private final FoodCategories relatedCategory;
     private final String translationKey;
 
