@@ -10,7 +10,6 @@ import com.azukii.diet.data.PlayerActivityData;
 import com.azukii.diet.gui.screen.FoodCategoriesScreen;
 import com.azukii.diet.profile.ClientFoodProfileCache;
 import com.azukii.diet.profile.FoodProfile;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -67,14 +66,13 @@ public class ModClientEvents {
         if (mc.player == null || mc.level == null) return;
 
         Player player = mc.player;
-        if (player.getAbilities().instabuild) return;
 
         // Food item in hand
         ItemStack mainHand = player.getMainHandItem();
         ItemStack offHand = player.getOffhandItem();
         boolean holdingFood = (!mainHand.isEmpty() && mainHand.get(DataComponents.FOOD) != null) || (!offHand.isEmpty() && offHand.get(DataComponents.FOOD) != null);
 
-        if (holdingFood) TooltipHandler.hudTimer = 5f;
+        if (holdingFood) TooltipHandler.hudTimer = 3f;
 
         // Last food has changed
         Identifier currentLastFood = player.getData(ModAttachments.PLAYER_ACTIVITY).getLastFood();
@@ -82,7 +80,7 @@ public class ModClientEvents {
             boolean isFirstInit = TooltipHandler.lastFoodDisplayed == null;
             TooltipHandler.lastFoodDisplayed = currentLastFood;
             if (!isFirstInit) {
-                TooltipHandler.hudTimer = 5f;
+                TooltipHandler.hudTimer = 3f;
             }
         }
 
@@ -100,6 +98,7 @@ public class ModClientEvents {
         if (mc.player == null) return;
 
         Player player = mc.player;
+        if (player.getAbilities().instabuild) return;
         PlayerActivityData data = player.getData(ModAttachments.PLAYER_ACTIVITY);
         Identifier lastFood = data.getLastFood();
 
@@ -208,7 +207,7 @@ public class ModClientEvents {
             return line;
         }
 
-        private static List<Component> buildActionLines(FoodProfile profile) {
+        public static List<Component> buildActionLines(FoodProfile profile) {
             float total = 0.0f;
             for (FoodCategories category : FoodCategories.VALUES) {
                 total += profile.get(category);
