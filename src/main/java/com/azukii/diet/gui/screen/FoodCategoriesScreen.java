@@ -18,6 +18,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -103,6 +104,7 @@ public class FoodCategoriesScreen extends Screen {
 
         renderTitle(graphics, guiLeft, guiTop);
         renderDietBars(graphics, guiLeft, guiTop);
+        renderPlayerStats(graphics, guiLeft, guiTop);
 
         for (HoverArea area : hoverAreas) {
             if (mouseX >= area.x() && mouseX < area.x() + area.width() && mouseY >= area.y() && mouseY < area.y() + area.height()) {
@@ -116,6 +118,12 @@ public class FoodCategoriesScreen extends Screen {
         Component title = Component.translatable("screen.dietmod.food_categories");
         int x = guiLeft + (OVERLAY_WIDTH - this.font.width(title)) / 2;
         graphics.text(this.font, title, x, guiTop + 6, 0xFF404040, false);
+    }
+
+    private void renderPlayerStats(GuiGraphicsExtractor graphics, int guiLeft, int guiTop) {
+        Player player = Minecraft.getInstance().player;
+        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, MobEffects.SATURATION.unwrapKey().get().identifier(), guiLeft, guiTop, BAR_WIDTH, BAR_HEIGHT);
+        hoverAreas.add(new HoverArea(guiLeft,guiTop,16,16, List.of(Component.literal(String.valueOf(player.getFoodData().getSaturationLevel())))));
     }
 
     private void renderDietBars(GuiGraphicsExtractor graphics, int guiLeft, int guiTop) {

@@ -17,8 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(FoodData.class)
 public class FoodDataMixin {
     /**
-     * We enforce the saturation cap here — at most 1 tick of overshoot after eating,
-     * which is imperceptible (50ms).
+     * We enforce the saturation cap here
      * cap = 20 × average(barLevel%) across all 5 diet categories.
      */
     @Inject(at = @At("TAIL"), method = "tick(Lnet/minecraft/server/level/ServerPlayer;)V")

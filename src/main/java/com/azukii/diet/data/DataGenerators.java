@@ -11,6 +11,7 @@ public class DataGenerators {
 
     @SubscribeEvent
     static void gatherData(GatherDataEvent.Client event) {
+        event.createProvider(ModItemTagsProvider::new);
         event.createProvider(ModSpriteSourceProvider::new);
     }
 }

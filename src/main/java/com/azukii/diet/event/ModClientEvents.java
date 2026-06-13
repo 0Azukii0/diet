@@ -8,7 +8,6 @@ import com.azukii.diet.data.FoodCategories;
 import com.azukii.diet.data.FoodRegistry;
 import com.azukii.diet.data.PlayerActivityData;
 import com.azukii.diet.gui.screen.FoodCategoriesScreen;
-import com.azukii.diet.profile.ClientFoodProfileCache;
 import com.azukii.diet.profile.FoodProfile;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.ChatFormatting;

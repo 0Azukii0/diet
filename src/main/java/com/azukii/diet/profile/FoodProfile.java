@@ -5,60 +5,81 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.util.Mth;
 
+import java.util.Collections;
 import java.util.EnumMap;
+import java.util.Map;
+import java.util.StringJoiner;
 
 /**
  * Immutable per-item diet contribution profile.
  */
-public record FoodProfile(float[] values) {
-    public static final FoodProfile EMPTY = new FoodProfile(new float[FoodCategories.COUNT]);
+public final class FoodProfile {
+    public static final FoodProfile EMPTY = new FoodProfile(Collections.emptyMap());
 
-    public static final Codec<FoodProfile> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-            Codec.FLOAT.optionalFieldOf("grain", 0.0f).forGetter(profile -> profile.get(FoodCategories.GRAIN)),
-            Codec.FLOAT.optionalFieldOf("protein", 0.0f).forGetter(profile -> profile.get(FoodCategories.PROTEIN)),
-            Codec.FLOAT.optionalFieldOf("vegetable", 0.0f).forGetter(profile -> profile.get(FoodCategories.VEGETABLE)),
-            Codec.FLOAT.optionalFieldOf("fruit", 0.0f).forGetter(profile -> profile.get(FoodCategories.FRUIT)),
-            Codec.FLOAT.optionalFieldOf("sugar", 0.0f).forGetter(profile -> profile.get(FoodCategories.SUGAR))
-    ).apply(instance, FoodProfile::of));
+    private final Map<FoodCategories, Float> values;
 
-    public static FoodProfile of(float grain, float protein, float vegetable, float fruit, float sugar) {
-        float[] array = new float[FoodCategories.COUNT];
-        array[FoodCategories.GRAIN.ordinal()] = clamp(grain);
-        array[FoodCategories.PROTEIN.ordinal()] = clamp(protein);
-        array[FoodCategories.VEGETABLE.ordinal()] = clamp(vegetable);
-        array[FoodCategories.FRUIT.ordinal()] = clamp(fruit);
-        array[FoodCategories.SUGAR.ordinal()] = clamp(sugar);
-        return new FoodProfile(array);
+    private FoodProfile(Map<FoodCategories, Float> values) {
+        this.values = values;
     }
 
-    private static float clamp(float value) {
-        return Mth.clamp(value, 0.0f, 1000.0f);
+    public static FoodProfile single(FoodCategories category, float value) {
+        if (value <= 0f) return EMPTY;
+        return new FoodProfile(Map.of(category, value));
+    }
+
+    public static FoodProfile of(Map<FoodCategories, Float> values) {
+        if (values == null || values.isEmpty()) return EMPTY;
+
+        EnumMap<FoodCategories, Float> clean = new EnumMap<>(FoodCategories.class);
+        values.forEach((cat, v) -> {
+            if (v > 0f) clean.put(cat, v);
+        });
+
+        return clean.isEmpty() ? EMPTY : new FoodProfile(Collections.unmodifiableMap(clean));
     }
 
     public float get(FoodCategories category) {
-        return values[category.ordinal()];
-    }
-
-    public float[] copyValues() {
-        float[] copy = new float[values.length];
-        System.arraycopy(values, 0, copy, 0, values.length);
-        return copy;
+        return values.getOrDefault(category, 0f);
     }
 
     public boolean isEmpty() {
-        for (float value : values) {
-            if (value > 0.0f) {
-                return false;
-            }
-        }
-        return true;
+        return values.isEmpty();
     }
 
-    public static FoodProfile fromEnumMap(EnumMap<FoodCategories, Float> map) {
-        float[] array = new float[FoodCategories.COUNT];
-        for (FoodCategories category : FoodCategories.VALUES) {
-            array[category.ordinal()] = clamp(map.getOrDefault(category, 0.0f));
-        }
-        return new FoodProfile(array);
+    public Map<FoodCategories, Float> values() {
+        return values;
+    }
+
+    public float total() {
+        float sum = 0f;
+        for (float v : values.values()) sum += v;
+        return sum;
+    }
+
+    public float ratioFor(FoodCategories category) {
+        float t = total();
+        return t == 0f ? 0f : get(category) / t;
+    }
+
+    public boolean hasCategory(FoodCategories category) {
+        return values.containsKey(category);
+    }
+
+    @Override
+    public String toString() {
+        if (isEmpty()) return "FoodProfile{EMPTY}";
+        StringJoiner sj = new StringJoiner(", ", "FoodProfile{", "}");
+        values.forEach((cat, v) -> sj.add(cat.name().toLowerCase() + "=" + v));
+        return sj.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return obj instanceof FoodProfile other && values.equals(other.values);
+    }
+
+    @Override
+    public int hashCode() {
+        return values.hashCode();
     }
 }

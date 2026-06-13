@@ -7,7 +7,6 @@ import com.azukii.diet.data.FoodDataLoader;
 import com.azukii.diet.data.ModFoodData;
 import com.azukii.diet.data.PlayerActivityData;
 import com.azukii.diet.network.FoodSyncManager;
-import com.azukii.diet.network.FoodProfileSyncPacket;
 import com.azukii.diet.network.FoodSyncPacket;
 import com.azukii.diet.network.PlayerActivitySyncPacket;
 import com.azukii.diet.system.FoodSystemSettings;
@@ -58,14 +57,6 @@ public class ModEvents {
                 PlayerActivitySyncPacket.STREAM_CODEC,
                 (packet, context) -> context.enqueueWork(() ->
                         PlayerActivitySyncPacket.handle(packet, context.player())
-                )
-        );
-
-        registrar.playToClient(
-                FoodProfileSyncPacket.TYPE,
-                FoodProfileSyncPacket.STREAM_CODEC,
-                (packet, context) -> context.enqueueWork(() ->
-                        FoodProfileSyncPacket.handle(packet, context.player())
                 )
         );
 

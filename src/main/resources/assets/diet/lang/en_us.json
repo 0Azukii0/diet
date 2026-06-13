@@ -8,6 +8,7 @@
   "tooltip.diet.category.vegetable": "Vegetables",
   "tooltip.diet.category.fruit": "Fruits",
   "tooltip.diet.category.sugar": "Sugars",
+  "tooltip.diet.action": "Reduces Exhaustion When:",
   "tooltip.diet.action_eaten": "When Eaten",
   "tooltip.diet.action_exhaustion": "Reduces Exhaustion From:",
   "tooltip.diet.action_categories": " - %s",
