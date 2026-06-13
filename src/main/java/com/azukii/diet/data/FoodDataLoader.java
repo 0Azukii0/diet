@@ -1,7 +1,6 @@
 package com.azukii.diet.data;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;
 import com.mojang.serialization.JsonOps;
@@ -16,10 +15,10 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Locale;
 import java.util.Map;
 
 public class FoodDataLoader extends SimpleJsonResourceReloadListener<JsonElement> {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(FoodDataLoader.class);
 
     private static final Codec<JsonElement> JSON_ELEMENT_CODEC = Codec.PASSTHROUGH.xmap(
@@ -41,7 +40,7 @@ public class FoodDataLoader extends SimpleJsonResourceReloadListener<JsonElement
 
         if (data.isEmpty()) {
             LOGGER.warn("[Diet] No diet_config data found — using defaults.");
-            FoodRegistry.loadConfig(DatapackConfiguration.defaults());
+            FoodRegistry.reset(DatapackConfiguration.defaults());
             return;
         }
 
@@ -64,11 +63,11 @@ public class FoodDataLoader extends SimpleJsonResourceReloadListener<JsonElement
         }
 
         if (selectedConfig != null) {
-            FoodRegistry.loadConfig(selectedConfig);
+            FoodRegistry.reset(selectedConfig);
             LOGGER.info("[Diet] Loaded diet config from {}.", selectedId);
         } else {
             LOGGER.warn("[Diet] All diet config files failed to load — falling back to defaults.");
-            FoodRegistry.loadConfig(DatapackConfiguration.defaults());
+            FoodRegistry.reset(DatapackConfiguration.defaults());
         }
     }
 
@@ -93,32 +92,32 @@ public class FoodDataLoader extends SimpleJsonResourceReloadListener<JsonElement
 
     private String buildExampleJson() {
         DatapackConfiguration configuration = DatapackConfiguration.defaults();
-        return """
-                {
-                  "_comment": "Diet mod — example config. Copy to data/<namespace>/diet_config/<name>.json in a datapack.",
+        return String.format(Locale.ROOT, """
+            {
+              "_comment": "Diet mod — example config. Copy to data/<namespace>/diet_config/<n>.json in a datapack.",
 
-                  "interval_seconds":    %d,
-                  "max_values":          %.1f,
-                  "tag_value_multiplier": %.1f,
+              "interval_seconds":    %d,
+              "max_values":          %.1f,
+              "tag_value_multiplier": %.1f,
 
-                  "decay_rates": {
-                    "grain":     %.2f,
-                    "protein":   %.2f,
-                    "vegetable": %.2f,
-                    "fruit":     %.2f,
-                    "sugar":     %.2f
-                  },
+              "decay_rates": {
+                "grain":     %.2f,
+                "protein":   %.2f,
+                "vegetable": %.2f,
+                "fruit":     %.2f,
+                "sugar":     %.2f
+              },
 
-                  "_items_comment": "Only needed for items with multiple categories or tag overrides.",
-                  "items": {
-                    "minecraft:apple":        { "fruit": 4.0, "sugar": 1.0 },
-                    "minecraft:carrot":       { "vegetable": 3.0, "sugar": 0.5 },
-                    "minecraft:cake":         { "grain": 2.0, "sugar": 3.0 },
-                    "minecraft:honey_bottle": { "sugar": 3.0 },
-                    "minecraft:golden_apple": { "fruit": 4.0, "sugar": 2.0 }
-                  }
-                }
-                """.formatted(
+              "_items_comment": "Only needed for items with multiple categories or tag overrides.",
+              "items": {
+                "minecraft:apple":        { "fruit": 4.0, "sugar": 1.0 },
+                "minecraft:carrot":       { "vegetable": 3.0, "sugar": 0.5 },
+                "minecraft:cake":         { "grain": 2.0, "sugar": 3.0 },
+                "minecraft:honey_bottle": { "sugar": 3.0 },
+                "minecraft:golden_apple": { "fruit": 4.0, "sugar": 2.0 }
+              }
+            }
+            """,
                 configuration.intervalSeconds(),
                 configuration.maxValues(),
                 configuration.tagValueMultiplier(),

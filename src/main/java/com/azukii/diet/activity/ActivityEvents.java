@@ -38,10 +38,7 @@ public class ActivityEvents {
     }
 
     private static float computeRatio(FoodProfile profile, ActivitiesCategories source, Player player) {
-        float total = 0.0f;
-        for (FoodCategories category : FoodCategories.VALUES) {
-            total += profile.get(category);
-        }
+        float total = profile.total();
         if (total <= 0.0f) return 0.0f;
 
         float relevant = profile.get(source.getRelatedCategory());

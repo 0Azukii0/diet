@@ -1,9 +1,6 @@
 package com.azukii.diet.profile;
 
 import com.azukii.diet.data.FoodCategories;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.Mth;
 
 import java.util.Collections;
 import java.util.EnumMap;

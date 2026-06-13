@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Item.class)
 public class ItemMixin {
-    @Inject(at = @At("HEAD"), method = "finishUsingItem", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "finishUsingItem")
     protected void finishUsingItem(ItemStack itemStack, Level level, LivingEntity entity, CallbackInfoReturnable<ItemStack> cir) {
         if (itemStack.getComponents().get(DataComponents.FOOD) != null && entity instanceof Player player) {
             PlayerActivityData data = player.getData(ModAttachments.PLAYER_ACTIVITY);

@@ -133,14 +133,20 @@ public class ModClientEvents {
             return;
         }
 
-        boolean isFood = stack.getItem().components().get(DataComponents.FOOD) != null;
+        boolean isFood = stack.get(DataComponents.FOOD) != null;
         if (!isFood) {
             return;
         }
 
-        Identifier cacheKey = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        TooltipHandler.CacheKey cacheKey = new TooltipHandler.CacheKey(
+                BuiltInRegistries.ITEM.getKey(stack.getItem()),
+                FoodRegistry.getConfig().hashCode()
+        );
+        System.out.println("cacheKey = " + cacheKey);
         List<Component> cached = TooltipHandler.CACHE.get(cacheKey);
+        System.out.println("cached = " + cached);
         if (cached == null) {
+            System.out.println("ModClientEvents.onGatherTooltip" + stack);
             cached = TooltipHandler.buildFoodTooltipLines(stack);
             TooltipHandler.CACHE.put(cacheKey, cached);
         }
@@ -159,20 +165,24 @@ public class ModClientEvents {
     }
 
     public static class TooltipHandler {
-        public static final Map<Identifier, List<Component>> CACHE = new HashMap<>();
+        public static final Map<CacheKey, List<Component>> CACHE = new HashMap<>();
         private static float hudTimer = 0f;
         private static Identifier lastFoodDisplayed = null;
 
         public static List<Component> buildFoodTooltipLines(ItemStack stack) {
             FoodProfile profile = FoodRegistry.getProfile(stack);
 
+            System.out.println("TooltipHandler.buildFoodTooltipLines" + 1);
             if (profile.isEmpty()) {
                 return List.of();
             }
+            System.out.println("TooltipHandler.buildFoodTooltipLines" + 2);
 
             List<Component> lines = new ArrayList<>();
             // Food nutrition
             for (FoodCategories category : FoodCategories.VALUES) {
+                System.out.println("TooltipHandler.buildFoodTooltipLines" + category);
+
                 float value = profile.get(category);
                 if (value <= 0.0f) continue;
                 lines.add(createFoodCategoryLine(category.getName(), value, category.getColor()));
@@ -196,12 +206,7 @@ public class ModClientEvents {
         }
 
         public static List<Component> buildActionLines(FoodProfile profile) {
-            float total = 0.0f;
-            for (FoodCategories category : FoodCategories.VALUES) {
-                total += profile.get(category);
-            }
-            if (total <= 0.0f) return List.of();
-
+            float total = profile.total();
             List<Component> lines = new java.util.ArrayList<>();
             for (ActivitiesCategories action : ActivitiesCategories.VALUES) {
                 float relevant = profile.get(action.getRelatedCategory());
@@ -222,5 +227,7 @@ public class ModClientEvents {
             line.append(Component.literal("-" + percent + "%").withStyle(ChatFormatting.GREEN));
             return line;
         }
+
+        public record CacheKey(Identifier id, int configHash) {}
     }
 }

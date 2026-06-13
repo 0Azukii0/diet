@@ -13,6 +13,9 @@ import com.azukii.diet.profile.FoodProfile;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -29,6 +32,9 @@ import net.neoforged.neoforge.resource.ListenerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+
 @EventBusSubscriber(modid = DietMod.MODID)
 public class ModEvents {
     private static final Logger LOGGER = LoggerFactory.getLogger(ModEvents.class);
@@ -36,6 +42,8 @@ public class ModEvents {
     @SubscribeEvent
     public static void onAddReloadListener(AddServerReloadListenersEvent event) {
         event.addRetainedListener(ListenerKey.create(Identifier.fromNamespaceAndPath(DietMod.MODID, "diet_config")), new FoodDataLoader());
+        event.addRetainedListener(ListenerKey.create(Identifier.fromNamespaceAndPath(DietMod.MODID, "diet_foods")),
+                (sharedState, executor, preparationBarrier, executor1) -> preparationBarrier.wait(null).thenRun(FoodRegistry::rebuildCache));
         LOGGER.info("Diet data loader registered");
     }
 
@@ -70,7 +78,7 @@ public class ModEvents {
         }
 
         ItemStack stack = event.getItem();
-        LOGGER.info("[DIET] Item use finished: {}", stack.getItem());
+        LOGGER.debug("[DIET] Item use finished: {}", stack.getItem());
 
         if (stack.isEmpty()) {
             return;

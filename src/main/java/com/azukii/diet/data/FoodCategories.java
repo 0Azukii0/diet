@@ -11,7 +11,7 @@ public enum FoodCategories {
     GRAIN("tooltip.diet.category.grain", Items.WHEAT,0xFFD1A11C),
     PROTEIN("tooltip.diet.category.protein", Items.COOKED_BEEF,0xFFD1771C),
     VEGETABLE("tooltip.diet.category.vegetable", Items.CARROT,0xFF30D11C),
-    SUGAR("tooltip.diet.category.SUGAR", Items.SUGAR,0xFFFC8DE6);
+    SUGAR("tooltip.diet.category.sugar", Items.SUGAR,0xFFFC8DE6);
 
     public static final FoodCategories[] VALUES = values();
     public static final int COUNT = VALUES.length;
@@ -24,7 +24,7 @@ public enum FoodCategories {
         this.name = name;
         this.item = item;
         this.color = color;
-        this.tag = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("diet", name().toLowerCase()));
+        this.tag = TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath("diet", name().toLowerCase()+"s"));
     }
 
     public static FoodCategories byName(String name) {

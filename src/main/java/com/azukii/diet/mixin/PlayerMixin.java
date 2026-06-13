@@ -29,6 +29,7 @@ public abstract class PlayerMixin extends LivingEntity {
     @Inject(at = @At("TAIL"), method = "tick")
     protected void tail(CallbackInfo ci) {
         Player player = (((Player) (Object) this));
+        if (player.level().isClientSide()) return;
 
         if (!player.getActiveEffects().isEmpty()) {
             for (MobEffectInstance effect : player.getActiveEffects()) {
