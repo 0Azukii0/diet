@@ -32,10 +32,9 @@ public class FoodDataMixin {
     @Unique
     private float diet$computeSaturationCap(Player player) {
         ModFoodData data = player.getData(ModAttachments.FOOD_DATA);
-        FoodProfile maxValues = FoodRegistry.getMaxValues();
+        float max = FoodRegistry.getMaxValue();
         float sum = 0f;
         for (FoodCategories cat : FoodCategories.VALUES) {
-            float max = maxValues.get(cat);
             sum += max > 0f ? Math.clamp(data.get(cat) / max, 0f, 1f) : 0f;
         }
         return (sum / FoodCategories.COUNT) * 20f;

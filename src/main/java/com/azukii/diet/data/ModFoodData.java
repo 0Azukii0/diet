@@ -7,26 +7,45 @@ import net.neoforged.neoforge.common.util.ValueIOSerializable;
 
 public class ModFoodData implements ValueIOSerializable {
     public static final float DEFAULT_START_PERCENT = 0.8f;
+
     private final float[] values = new float[FoodCategories.COUNT];
     private long lastDecayTimeMs = System.currentTimeMillis();
     private boolean dirty = false;
     private boolean initialized = false;
 
     public ModFoodData() {
-        preloadDefaults(DEFAULT_START_PERCENT);
+        preloadDefaults();
     }
 
     public float get(FoodCategories category) {
         return values[category.ordinal()];
     }
 
-    public void add(FoodProfile profile, FoodProfile maxValues) {
+    public float[] copyValues() {
+        float[] copy = new float[values.length];
+        System.arraycopy(values, 0, copy, 0, values.length);
+        return copy;
+    }
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
+    public long getLastDecayTimeMs() {
+        return lastDecayTimeMs;
+    }
+
+    /**
+     * Adds the nutritional values from a {@link FoodProfile} to this data,
+     * capped at the current {@link FoodRegistry#getMaxValue()}.
+     */
+    public void add(FoodProfile profile) {
+        float max = FoodRegistry.getMaxValue();
         for (FoodCategories category : FoodCategories.VALUES) {
             float delta = profile.get(category);
             if (delta <= 0.0f) continue;
             int idx = category.ordinal();
-            float max = maxValues.get(category);
-            float newValue = clamp(values[idx] + delta, max);
+            float newValue = Math.min(values[idx] + delta, max);
             if (newValue != values[idx]) {
                 values[idx] = newValue;
                 markDirty();
@@ -34,10 +53,15 @@ public class ModFoodData implements ValueIOSerializable {
         }
     }
 
-    public boolean applyDecay(FoodProfile decayRates, float deltaSeconds) {
-        if (deltaSeconds <= 0.0f) {
-            return false;
-        }
+    /**
+     * Decays all categories by their configured rate over {@code deltaSeconds}.
+     * Rates are read from {@link FoodRegistry#getConfig()} so they always reflect
+     * the current datapack without needing to pass them in.
+     *
+     * @return {@code true} if any value changed.
+     */
+    public boolean applyDecay(float deltaSeconds) {
+        if (deltaSeconds <= 0.0f) return false;
 
         boolean changed = false;
         for (FoodCategories category : FoodCategories.VALUES) {
@@ -45,34 +69,28 @@ public class ModFoodData implements ValueIOSerializable {
             float value = values[idx];
             if (value <= 0.0f) continue;
 
-            float decayPerSecond = decayRates.get(category);
+            float decayPerSecond = FoodRegistry.getConfig().decayRate(category);
             if (decayPerSecond <= 0.0f) continue;
 
-            float newValue = Math.max(0.0f, value - (decayPerSecond * deltaSeconds));
+            float newValue = Math.max(0.0f, value - decayPerSecond * deltaSeconds);
             if (newValue != value) {
-                changed = true;
                 values[idx] = newValue;
+                changed = true;
             }
         }
-        if (changed) {
-            markDirty();
-        }
+        if (changed) markDirty();
         return changed;
     }
 
-    public void ensureInitialized(FoodProfile maxValues, float percent) {
-        if (initialized) {
-            return;
-        }
-        preload(maxValues, percent);
+    /**
+     * Initializes all bars to {@code percent} × maxValue if not already initialized.
+     * Called on first login to avoid players starting with empty bars.
+     */
+    public void ensureInitialized(float percent) {
+        if (initialized) return;
+        preload(percent);
         initialized = true;
         dirty = true;
-    }
-
-    public float[] copyValues() {
-        float[] copy = new float[values.length];
-        System.arraycopy(values, 0, copy, 0, values.length);
-        return copy;
     }
 
     public void setAll(float[] newValues) {
@@ -87,48 +105,16 @@ public class ModFoodData implements ValueIOSerializable {
                 changed = true;
             }
         }
-        if (changed) {
-            markDirty();
-        }
-    }
-
-    public boolean isInitialized() {
-        return initialized;
-    }
-
-    public long getLastDecayTimeMs() {
-        return lastDecayTimeMs;
+        if (changed) markDirty();
     }
 
     public void setLastDecayTimeMs(long timestamp) {
         this.lastDecayTimeMs = timestamp;
     }
 
-    private float clamp(float value, float max) {
-        if (max <= 0.0f) {
-            return 0.0f;
-        }
-        return Math.max(0.0f, Math.min(value, max));
-    }
-
     public void markDirty() {
         this.dirty = true;
         this.initialized = true;
-    }
-
-    private void preloadDefaults(float percent) {
-        preload(FoodRegistry.getMaxValues(), percent);
-        this.initialized = false;
-        this.dirty = false;
-    }
-
-    private void preload(FoodProfile maxValues, float percent) {
-        float clampedPercent = Math.clamp(percent, 0.0f, 1.0f);
-        for (FoodCategories category : FoodCategories.VALUES) {
-            int idx = category.ordinal();
-            float max = maxValues.get(category);
-            values[idx] = clamp(max * clampedPercent, max);
-        }
     }
 
     public boolean consumeDirty() {
@@ -151,10 +137,37 @@ public class ModFoodData implements ValueIOSerializable {
     @Override
     public void deserialize(ValueInput input) {
         for (FoodCategories category : FoodCategories.VALUES) {
-            String key = category.name().toLowerCase();
-            values[category.ordinal()] = input.getFloatOr(key, 0);
+            values[category.ordinal()] = input.getFloatOr(category.name().toLowerCase(), 0f);
         }
-        lastDecayTimeMs = input.keySet().contains("lastDecayTimeMs") ? input.getLongOr("lastDecayTimeMs", 0) : System.currentTimeMillis();
+        // If the key is absent (fresh save), use current time to avoid instant decay burst.
+        lastDecayTimeMs = input.keySet().contains("lastDecayTimeMs")
+                ? input.getLongOr("lastDecayTimeMs", 0L)
+                : System.currentTimeMillis();
         initialized = input.getBooleanOr("initialized", false);
+    }
+
+    /**
+     * Called from the constructor — FoodRegistry may not be loaded yet, uses the default constant.
+     */
+    private void preloadDefaults() {
+        float max = FoodRegistry.getMaxValue();
+        float target = max * DEFAULT_START_PERCENT;
+        for (FoodCategories category : FoodCategories.VALUES) {
+            values[category.ordinal()] = target;
+        }
+        this.initialized = false;
+        this.dirty = false;
+    }
+
+    /**
+     * Called from {@link #ensureInitialized} once the registry is available.
+     */
+    private void preload(float percent) {
+        float clampedPercent = Math.clamp(percent, 0.0f, 1.0f);
+        float max = FoodRegistry.getMaxValue();
+        float target = max * clampedPercent;
+        for (FoodCategories category : FoodCategories.VALUES) {
+            values[category.ordinal()] = target;
+        }
     }
 }

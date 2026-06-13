@@ -130,7 +130,7 @@ public class FoodCategoriesScreen extends Screen {
         hoverAreas.clear();
         Player player = Minecraft.getInstance().player;
         ModFoodData data = player != null ? player.getData(ModAttachments.FOOD_DATA) : null;
-        FoodProfile maxProfile = FoodRegistry.getMaxValues();
+        /*FoodProfile maxProfile = FoodRegistry.getMaxValue();
 
         int labelX = guiLeft + LABEL_OFFSET_X;
         int barX = guiLeft + BAR_OFFSET_X;
@@ -148,7 +148,7 @@ public class FoodCategoriesScreen extends Screen {
             hoverAreas.add(new HoverArea(labelX,barY - 6,16,16, createExhaustionTooltip(category)));
             hoverAreas.add(new HoverArea(barX, barY, BAR_WIDTH, BAR_HEIGHT, List.of(Component.translatable(category.getName()), Component.literal(String.format("%.0f / %.0f", value, max)).withColor(category.getColor()))));
             i++;
-        }
+        }*/
     }
 
     public static List<Component> createExhaustionTooltip(FoodCategories category) {

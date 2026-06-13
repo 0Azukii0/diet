@@ -36,6 +36,7 @@ import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -163,25 +164,13 @@ public class ModClientEvents {
         private static Identifier lastFoodDisplayed = null;
 
         public static List<Component> buildFoodTooltipLines(ItemStack stack) {
-            // Try to get from client cache first (pre-calculated, no lag)
-            ClientFoodProfileCache clientCache = DietClientMod.getClientDietCache();
-            FoodProfile profile = null;
-
-            if (clientCache != null) {
-                Identifier itemId = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem());
-                profile = clientCache.getProfile(itemId);
-            }
-
-            // Fallback to FoodRegistry if not in client cache
-            if (profile == null) {
-                profile = FoodRegistry.getProfile(stack);
-            }
+            FoodProfile profile = FoodRegistry.getProfile(stack);
 
             if (profile.isEmpty()) {
                 return List.of();
             }
 
-            List<Component> lines = new java.util.ArrayList<>();
+            List<Component> lines = new ArrayList<>();
             // Food nutrition
             for (FoodCategories category : FoodCategories.VALUES) {
                 float value = profile.get(category);

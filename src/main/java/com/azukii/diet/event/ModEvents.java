@@ -2,14 +2,13 @@ package com.azukii.diet.event;
 
 import com.azukii.diet.DietMod;
 import com.azukii.diet.attachments.ModAttachments;
-import com.azukii.diet.data.FoodRegistry;
 import com.azukii.diet.data.FoodDataLoader;
+import com.azukii.diet.data.FoodRegistry;
 import com.azukii.diet.data.ModFoodData;
 import com.azukii.diet.data.PlayerActivityData;
 import com.azukii.diet.network.FoodSyncManager;
 import com.azukii.diet.network.FoodSyncPacket;
 import com.azukii.diet.network.PlayerActivitySyncPacket;
-import com.azukii.diet.system.FoodSystemSettings;
 import com.azukii.diet.profile.FoodProfile;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.resources.Identifier;
@@ -90,7 +89,7 @@ public class ModEvents {
         ServerPlayer serverPlayer = (ServerPlayer) player;
         ModFoodData data = serverPlayer.getData(ModAttachments.FOOD_DATA);
         FoodSyncManager.initializeIfNeeded(serverPlayer, data);
-        data.add(profile, FoodRegistry.getMaxValues());
+        data.add(profile);
         data.setLastDecayTimeMs(System.currentTimeMillis());
         FoodSyncManager.syncIfNeeded(serverPlayer, data, true);
     }
@@ -106,8 +105,7 @@ public class ModEvents {
         FoodSyncManager.initializeIfNeeded(serverPlayer, data);
         //FoodEffectsManager.apply(serverPlayer, data);
 
-        FoodSystemSettings settings = FoodRegistry.getSettings();
-        long decayIntervalMs = settings.decayIntervalMillis();
+        long decayIntervalMs = FoodRegistry.getConfig().intervalSeconds() * 1000L;
         long now = System.currentTimeMillis();
         long lastDecay = data.getLastDecayTimeMs();
         long timeSinceDecay = now - lastDecay;
@@ -119,7 +117,7 @@ public class ModEvents {
         float elapsedSeconds = timeSinceDecay / 1000.0f;
         float intervalSeconds = Math.max(1.0f, decayIntervalMs / 1000.0f);
         float intervalUnits = elapsedSeconds / intervalSeconds;
-        boolean changed = data.applyDecay(FoodRegistry.getDecayRates(), intervalUnits);
+        boolean changed = data.applyDecay(intervalUnits);
         data.setLastDecayTimeMs(now);
 
         if (changed) {
@@ -133,9 +131,6 @@ public class ModEvents {
             return;
         }
 
-        // Set server reference for recipe analysis
-        FoodRegistry.setServer(serverPlayer.level().getServer());
-
         ModFoodData data = serverPlayer.getData(ModAttachments.FOOD_DATA);
         FoodSyncManager.initializeIfNeeded(serverPlayer, data);
 
@@ -148,8 +143,5 @@ public class ModEvents {
         // Sync for last food eaten HUD
         PlayerActivityData activityData = serverPlayer.getData(ModAttachments.PLAYER_ACTIVITY);
         PacketDistributor.sendToPlayer(serverPlayer, new PlayerActivitySyncPacket(activityData.getLastFood()));
-
-        // Sync diet profiles from server to client
-        FoodSyncManager.syncDietProfilesToClient(serverPlayer);
     }
 }

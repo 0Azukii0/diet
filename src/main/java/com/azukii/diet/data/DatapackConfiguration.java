@@ -1,13 +1,7 @@
 package com.azukii.diet.data;
 
-import com.azukii.diet.system.FoodSystemSettings;
-import com.azukii.diet.profile.FoodProfile;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

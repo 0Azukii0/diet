@@ -48,8 +48,7 @@ public class ActivityEvents {
         float baseRatio = Math.min(relevant / total, 0.75f);
 
         ModFoodData data = player.getData(ModAttachments.FOOD_DATA);
-        FoodProfile maxValues = FoodRegistry.getMaxValues();
-        float maxVal = maxValues.get(source.getRelatedCategory());
+        float maxVal = FoodRegistry.getMaxValue();
         float barLevel = maxVal > 0f ? Math.clamp(data.get(source.getRelatedCategory()) / maxVal, 0f, 1f) : 0f;
 
         return baseRatio * barLevel;

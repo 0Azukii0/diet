@@ -4,7 +4,6 @@ import com.azukii.diet.profile.FoodProfile;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
@@ -46,5 +45,18 @@ public final class FoodRegistry {
 
     public static FoodProfile getProfile(ItemStack stack) {
         return cache.getOrDefault(BuiltInRegistries.ITEM.getKey(stack.getItem()), FoodProfile.EMPTY);
+    }
+
+    public static float getMaxValue() {
+        return config != null ? config.maxValues() : DatapackConfiguration.DEFAULT_MAX_VALUES;
+    }
+
+    public static DatapackConfiguration getConfig() {
+        return config;
+    }
+
+    public static void reset() {
+        cache.clear();
+        config = null;
     }
 }

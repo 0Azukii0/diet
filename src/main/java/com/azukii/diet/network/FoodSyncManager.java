@@ -1,13 +1,8 @@
 package com.azukii.diet.network;
 
-import com.azukii.diet.data.FoodRegistry;
 import com.azukii.diet.data.ModFoodData;
-import com.azukii.diet.profile.FoodProfile;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.neoforge.network.PacketDistributor;
-
-import java.util.Map;
 
 /**
  * Handles diet gain from food consumption and periodic decay.
@@ -29,7 +24,7 @@ public class FoodSyncManager {
         if (data.isInitialized()) {
             return;
         }
-        data.ensureInitialized(FoodRegistry.getMaxValues(), START_PERCENT);
+        data.ensureInitialized(START_PERCENT);
         data.setLastDecayTimeMs(System.currentTimeMillis());
         syncIfNeeded(player, data, true);
     }
