@@ -14,5 +14,12 @@
   },
   "overwrites": {
     "requireAnnotations": true
-  }
+  },
+  "client": [
+    "gui.AbstractContainerScreenAccessor",
+    "gui.AbstractRecipeBookScreenAccessor",
+    "gui.InventoryScreenMixin",
+    "gui.RecipeBookComponentMixin",
+    "gui.ScreenInvoker"
+  ]
 }

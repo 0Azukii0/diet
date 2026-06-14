@@ -24,7 +24,7 @@ public class ModFoodData implements ValueIOSerializable, DecayData {
         return values[category.ordinal()];
     }
 
-    public int getLevels(FoodCategories category) {
+    public int getLevel(FoodCategories category) {
         return levels[category.ordinal()];
     }
 

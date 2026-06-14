@@ -1,8 +1,8 @@
 {
   "values": [
+    "#c:foods/cookie",
     "minecraft:sugar",
     "minecraft:honey_bottle",
-    "minecraft:cookie",
     "minecraft:cake",
     "minecraft:pumpkin_pie"
   ]

@@ -1,11 +1,8 @@
 {
   "values": [
-    "minecraft:carrot",
-    "minecraft:golden_carrot",
-    "minecraft:potato",
+    "#c:foods/vegetable",
     "minecraft:baked_potato",
     "minecraft:poisonous_potato",
-    "minecraft:beetroot",
     "minecraft:dried_kelp",
     "minecraft:sea_pickle"
   ]

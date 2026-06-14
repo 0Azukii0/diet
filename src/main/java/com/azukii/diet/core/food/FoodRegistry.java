@@ -22,7 +22,7 @@ public final class FoodRegistry {
     private static final Map<Identifier, FoodItemProfile> cache = new HashMap<>();
 
     public static void rebuildCache() {
-        ModClientEvents.TooltipHandler.CACHE.clear();
+        ModClientEvents.FoodTooltipHandler.CACHE.clear();
         cache.clear();
         for (Item item : BuiltInRegistries.ITEM) {
             Identifier id = BuiltInRegistries.ITEM.getKey(item);

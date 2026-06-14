@@ -5,20 +5,17 @@ import com.azukii.diet.attachments.ModAttachments;
 import com.azukii.diet.core.activity.PlayerActivityData;
 import com.azukii.diet.core.food.FoodCategories;
 import com.azukii.diet.core.food.FoodRegistry;
-import com.azukii.diet.gui.screen.FoodCategoriesScreen;
+import com.azukii.diet.gui.screen.FoodStatsRenderState;
+import com.azukii.diet.gui.screen.FoodStatsScreen;
 import com.azukii.diet.item.FoodItemProfile;
 import com.mojang.datafixers.util.Either;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -41,19 +38,17 @@ import java.util.Map;
 @EventBusSubscriber(modid = DietMod.MODID, value = Dist.CLIENT)
 public class ModClientEvents {
     @SubscribeEvent
-    public static void onScreenInit(ScreenEvent.Init.Post event) {
-        if (event.getScreen() instanceof InventoryScreen screen) {
-            event.addListener(new ImageButton(
-                    screen.getLeftPos() + 134,
-                    screen.height / 2 - 22,
-                    20, 18,
-                    new WidgetSprites(
-                            Identifier.fromNamespaceAndPath(DietMod.MODID, "hud/food_data_button"),
-                            Identifier.fromNamespaceAndPath(DietMod.MODID, "hud/food_data_button_highlighted")
-                    ),
-                    _ -> Minecraft.getInstance().setScreen(new FoodCategoriesScreen(screen)),
-                    Component.empty()
-            ));
+    public static void onScreenRender(ScreenEvent.Render.Background event) {
+        if (!(event.getScreen() instanceof InventoryScreen screen)) return;
+        if (!FoodStatsRenderState.isOpen()) return;
+
+        FoodStatsScreen.render(event.getGuiGraphics(), screen, event.getMouseX(), event.getMouseY(), event.getPartialTick());
+    }
+
+    @SubscribeEvent
+    public static void onScreenClose(ScreenEvent.Closing event) {
+        if (event.getScreen() instanceof InventoryScreen) {
+            FoodStatsRenderState.close();
         }
     }
 
@@ -69,27 +64,27 @@ public class ModClientEvents {
         ItemStack offHand = player.getOffhandItem();
         boolean holdingFood = (!mainHand.isEmpty() && mainHand.get(DataComponents.FOOD) != null) || (!offHand.isEmpty() && offHand.get(DataComponents.FOOD) != null);
 
-        if (holdingFood) TooltipHandler.hudTimer = 3f;
+        if (holdingFood) FoodTooltipHandler.hudTimer = 3f;
 
         // Last food has changed
         Identifier currentLastFood = player.getData(ModAttachments.PLAYER_ACTIVITY).getLastFood();
-        if (!currentLastFood.equals(TooltipHandler.lastFoodDisplayed)) {
-            boolean isFirstInit = TooltipHandler.lastFoodDisplayed == null;
-            TooltipHandler.lastFoodDisplayed = currentLastFood;
+        if (!currentLastFood.equals(FoodTooltipHandler.lastFoodDisplayed)) {
+            boolean isFirstInit = FoodTooltipHandler.lastFoodDisplayed == null;
+            FoodTooltipHandler.lastFoodDisplayed = currentLastFood;
             if (!isFirstInit) {
-                TooltipHandler.hudTimer = 3f;
+                FoodTooltipHandler.hudTimer = 3f;
             }
         }
 
-        if (TooltipHandler.hudTimer > 0f) {
-            TooltipHandler.hudTimer = Math.max(0f, TooltipHandler.hudTimer - (1f / 20f));
+        if (FoodTooltipHandler.hudTimer > 0f) {
+            FoodTooltipHandler.hudTimer = Math.max(0f, FoodTooltipHandler.hudTimer - (1f / 20f));
         }
     }
 
     @SubscribeEvent
     public static void onRenderHud(RenderGuiLayerEvent.Post event) {
         if (event.getName() != VanillaGuiLayers.FOOD_LEVEL) return;
-        if (TooltipHandler.hudTimer <= 0f) return;
+        if (FoodTooltipHandler.hudTimer <= 0f) return;
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
@@ -135,11 +130,11 @@ public class ModClientEvents {
             return;
         }
 
-        TooltipHandler.CacheKey cacheKey = new TooltipHandler.CacheKey(BuiltInRegistries.ITEM.getKey(stack.getItem()), FoodRegistry.getConfig().hashCode());
-        List<Component> cached = TooltipHandler.CACHE.get(cacheKey);
+        FoodTooltipHandler.CacheKey cacheKey = new FoodTooltipHandler.CacheKey(BuiltInRegistries.ITEM.getKey(stack.getItem()), FoodRegistry.getConfig().hashCode());
+        List<Component> cached = FoodTooltipHandler.CACHE.get(cacheKey);
         if (cached == null) {
-            cached = TooltipHandler.buildFoodTooltipLines(stack);
-            TooltipHandler.CACHE.put(cacheKey, cached);
+            cached = FoodTooltipHandler.buildFoodTooltipLines(stack);
+            FoodTooltipHandler.CACHE.put(cacheKey, cached);
         }
 
         if (cached.isEmpty()) {
@@ -151,7 +146,7 @@ public class ModClientEvents {
         }
     }
 
-    public static class TooltipHandler {
+    public static class FoodTooltipHandler {
         public static final Map<CacheKey, List<Component>> CACHE = new HashMap<>();
         private static float hudTimer = 0f;
         private static Identifier lastFoodDisplayed = null;
@@ -164,20 +159,15 @@ public class ModClientEvents {
             }
 
             List<Component> lines = new ArrayList<>();
-            // Food categories
             for (FoodCategories category : FoodCategories.VALUES) {
                 float value = profile.get(category);
                 if (value <= 0.0f) continue;
-                lines.add(createFoodCategoryLine(category.getName(), value, category.getColor()));
+                lines.add(Component.empty()
+                        .append(Component.translatable(category.getName()).withColor(category.getColor()))
+                        .append(Component.translatable("tooltip.diet.category.level_added").withColor(0xFFFFFF)));
             }
 
             return lines;
-        }
-
-        private static Component createFoodCategoryLine(String translationKey, float value, int color) {
-            MutableComponent line = Component.literal("");
-            line.append(Component.translatable(translationKey).withStyle(Style.EMPTY.withColor(color)));
-            return line;
         }
 
         public record CacheKey(Identifier id, int configHash) {}
