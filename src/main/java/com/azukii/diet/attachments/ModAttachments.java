@@ -3,6 +3,7 @@ package com.azukii.diet.attachments;
 import com.azukii.diet.DietMod;
 import com.azukii.diet.core.activity.PlayerActivityData;
 import com.azukii.diet.core.food.ModFoodData;
+import com.azukii.diet.core.thirst.ThirstData;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredHolder;
@@ -20,6 +21,10 @@ public class ModAttachments {
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<PlayerActivityData>> PLAYER_ACTIVITY =
             ATTACHMENT_TYPES.register("player_activity_data", () -> AttachmentType.serializable(PlayerActivityData::new)
                     .sync((iAttachmentHolder, serverPlayer) -> iAttachmentHolder == serverPlayer, PlayerActivityData.STREAM_CODEC)
+                    .build());
+    public static final DeferredHolder<AttachmentType<?>, AttachmentType<ThirstData>> THIRST_DATA =
+            ATTACHMENT_TYPES.register("thirst_data", () -> AttachmentType.serializable(ThirstData::new)
+                    .sync((iAttachmentHolder, serverPlayer) -> iAttachmentHolder == serverPlayer, ThirstData.STREAM_CODEC)
                     .build());
 
     public static void register(IEventBus bus) {

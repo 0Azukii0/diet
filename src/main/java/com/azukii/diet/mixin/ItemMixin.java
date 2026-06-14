@@ -6,6 +6,7 @@ import com.azukii.diet.core.activity.PlayerActivityData;
 import com.azukii.diet.core.food.FoodCategories;
 import com.azukii.diet.core.food.FoodRegistry;
 import com.azukii.diet.core.food.ModFoodData;
+import com.azukii.diet.core.thirst.ThirstData;
 import com.azukii.diet.item.FoodItemProfile;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -24,18 +25,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class ItemMixin {
     @Inject(at = @At("HEAD"), method = "finishUsingItem")
     protected void finishUsingItem(ItemStack itemStack, Level level, LivingEntity entity, CallbackInfoReturnable<ItemStack> cir) {
-        if (itemStack.getComponents().get(DataComponents.FOOD) != null && entity instanceof Player player) {
-            PlayerActivityData activityData = player.getData(ModAttachments.PLAYER_ACTIVITY);
-            ModFoodData foodData = player.getData(ModAttachments.FOOD_DATA);
-            Identifier currentFood = BuiltInRegistries.ITEM.getKey(itemStack.getItem());
-            FoodItemProfile profile = FoodRegistry.getProfile(itemStack);
-            for (FoodCategories category : FoodCategories.VALUES) {
-                float val = profile.get(category);
-                if (val != 0.0F) {
-                    activityData.setLastFood(currentFood);
-                    foodData.addLevel(category);
-                    return;
+        if (entity instanceof Player player) {
+            if (itemStack.getComponents().get(DataComponents.FOOD) != null) {
+                PlayerActivityData activityData = player.getData(ModAttachments.PLAYER_ACTIVITY);
+                ModFoodData foodData = player.getData(ModAttachments.FOOD_DATA);
+                Identifier currentFood = BuiltInRegistries.ITEM.getKey(itemStack.getItem());
+                FoodItemProfile profile = FoodRegistry.getProfile(itemStack);
+                for (FoodCategories category : FoodCategories.VALUES) {
+                    float val = profile.get(category);
+                    if (val != 0.0F) {
+                        activityData.setLastFood(currentFood);
+                        foodData.addLevel(category);
+                        return;
+                    }
                 }
+            } else if (itemStack.getComponents().get(DataComponents.POTION_CONTENTS) != null) {
+                ThirstData thirstData = player.getData(ModAttachments.THIRST_DATA);
+                thirstData.addThirstLevel();
             }
         }
     }

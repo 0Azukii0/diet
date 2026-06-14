@@ -22,15 +22,16 @@ public class ActivityEvents {
     }
 
     public static float exhaustionReductionLongSheen(Player player, ActivitiesCategories source, int cooldown) {
-        PlayerActivityData data = player.getData(ModAttachments.PLAYER_ACTIVITY);
-        data.setHurtOrHeal(source == ActivitiesCategories.HURT || source == ActivitiesCategories.HEAL);
+        PlayerActivityData playerActivityData = player.getData(ModAttachments.PLAYER_ACTIVITY);
+        playerActivityData.setHurtOrHeal(source == ActivitiesCategories.HURT || source == ActivitiesCategories.HEAL);
 
-        Holder.Reference<Item> item = BuiltInRegistries.ITEM.get(data.getLastFood()).orElse(Items.COOKED_BEEF.builtInRegistryHolder());
+        Holder.Reference<Item> item = BuiltInRegistries.ITEM.get(playerActivityData.getLastFood()).orElse(Items.COOKED_BEEF.builtInRegistryHolder());
         FoodItemProfile profile = FoodRegistry.getProfile(new ItemStack(item));
 
         float ratio = computeRatio(profile, source, player);
         if (ratio > 0.0f) {
-            data.setSheenCooldown(cooldown);
+            playerActivityData.setSheenCooldown(cooldown);
+            player.setData(ModAttachments.PLAYER_ACTIVITY, playerActivityData);
         }
         return ratio;
     }

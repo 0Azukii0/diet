@@ -1,6 +1,7 @@
 package com.azukii.diet.core.food;
 
 import com.azukii.diet.DietMod;
+import com.azukii.diet.core.DecayData;
 import com.azukii.diet.item.FoodItemProfile;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
@@ -11,8 +12,7 @@ import org.jspecify.annotations.NonNull;
 
 import java.util.Arrays;
 
-public class ModFoodData implements ValueIOSerializable {
-    public static final float DEFAULT_START_PERCENT = 0.8f;
+public class ModFoodData implements ValueIOSerializable, DecayData {
     public static final int FOOD_CATEGORIES_MAX_LEVEL = 4;
 
     private final float[] values = new float[FoodCategories.COUNT];
@@ -40,8 +40,8 @@ public class ModFoodData implements ValueIOSerializable {
         return lastDecayTimeMs;
     }
 
-    public boolean isInitialized() {
-        return initialized;
+    public boolean isNotInitialized() {
+        return !initialized;
     }
 
     /**
