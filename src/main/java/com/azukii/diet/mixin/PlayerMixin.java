@@ -1,9 +1,9 @@
 package com.azukii.diet.mixin;
 
-import com.azukii.diet.activity.ActivitiesCategories;
-import com.azukii.diet.activity.ActivityEvents;
 import com.azukii.diet.attachments.ModAttachments;
-import com.azukii.diet.data.PlayerActivityData;
+import com.azukii.diet.core.activity.ActivitiesCategories;
+import com.azukii.diet.core.activity.ActivityEvents;
+import com.azukii.diet.core.activity.PlayerActivityData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;

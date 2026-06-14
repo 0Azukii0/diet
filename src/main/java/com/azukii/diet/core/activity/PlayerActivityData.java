@@ -1,11 +1,14 @@
-package com.azukii.diet.data;
+package com.azukii.diet.core.activity;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
 import net.neoforged.neoforge.common.util.ValueIOSerializable;
+import org.jspecify.annotations.NonNull;
 
 public class PlayerActivityData implements ValueIOSerializable {
     private Identifier lastFood = BuiltInRegistries.ITEM.getKey(Items.COOKED_BEEF);
@@ -59,4 +62,23 @@ public class PlayerActivityData implements ValueIOSerializable {
         setHurtOrHeal(input.getBooleanOr("HurtOrHeal", false));
         setSheenCooldown(input.getIntOr("SheenCooldown", 0));
     }
+
+    public static final StreamCodec<RegistryFriendlyByteBuf, PlayerActivityData> STREAM_CODEC =
+            new StreamCodec<>() {
+                @Override
+                public @NonNull PlayerActivityData  decode(RegistryFriendlyByteBuf buf) {
+                    PlayerActivityData data = new PlayerActivityData();
+                    data.setLastFood(buf.readIdentifier());
+                    data.setSheenCooldown(buf.readVarInt());
+                    data.setHurtOrHeal(buf.readBoolean());
+                    return data;
+                }
+
+                @Override
+                public void encode(RegistryFriendlyByteBuf buf, PlayerActivityData data) {
+                    buf.writeIdentifier(data.getLastFood());
+                    buf.writeVarInt(data.getSheenCooldown());
+                    buf.writeBoolean(data.getHurtOrHeal());
+                }
+            };
 }

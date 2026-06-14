@@ -1,10 +1,9 @@
 package com.azukii.diet.mixin;
 
 import com.azukii.diet.attachments.ModAttachments;
-import com.azukii.diet.data.FoodCategories;
-import com.azukii.diet.data.FoodRegistry;
-import com.azukii.diet.data.ModFoodData;
-import com.azukii.diet.profile.FoodProfile;
+import com.azukii.diet.core.food.FoodCategories;
+import com.azukii.diet.core.food.FoodRegistry;
+import com.azukii.diet.core.food.ModFoodData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
@@ -35,7 +34,7 @@ public class FoodDataMixin {
         float max = FoodRegistry.getMaxValue();
         float sum = 0f;
         for (FoodCategories cat : FoodCategories.VALUES) {
-            sum += max > 0f ? Math.clamp(data.get(cat) / max, 0f, 1f) : 0f;
+            sum += max > 0f ? Math.clamp(data.getValues(cat) / max, 0f, 1f) : 0f;
         }
         return (sum / FoodCategories.COUNT) * 20f;
     }

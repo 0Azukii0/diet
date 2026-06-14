@@ -1,7 +1,7 @@
 package com.azukii.diet.mixin;
 
-import com.azukii.diet.activity.ActivitiesCategories;
-import com.azukii.diet.activity.ActivityEvents;
+import com.azukii.diet.core.activity.ActivitiesCategories;
+import com.azukii.diet.core.activity.ActivityEvents;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;

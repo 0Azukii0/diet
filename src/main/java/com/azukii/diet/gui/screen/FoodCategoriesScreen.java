@@ -1,12 +1,10 @@
 package com.azukii.diet.gui.screen;
 
 import com.azukii.diet.DietMod;
-import com.azukii.diet.activity.ActivitiesCategories;
 import com.azukii.diet.attachments.ModAttachments;
-import com.azukii.diet.data.FoodCategories;
-import com.azukii.diet.data.FoodRegistry;
-import com.azukii.diet.data.ModFoodData;
-import com.azukii.diet.profile.FoodProfile;
+import com.azukii.diet.core.activity.ActivitiesCategories;
+import com.azukii.diet.core.food.FoodCategories;
+import com.azukii.diet.core.food.ModFoodData;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
@@ -16,7 +14,6 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;

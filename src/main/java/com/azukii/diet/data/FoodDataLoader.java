@@ -1,5 +1,7 @@
 package com.azukii.diet.data;
 
+import com.azukii.diet.core.food.FoodCategories;
+import com.azukii.diet.core.food.FoodRegistry;
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.Dynamic;

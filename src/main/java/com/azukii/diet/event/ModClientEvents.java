@@ -1,16 +1,13 @@
 package com.azukii.diet.event;
 
-import com.azukii.diet.DietClientMod;
 import com.azukii.diet.DietMod;
-import com.azukii.diet.activity.ActivitiesCategories;
 import com.azukii.diet.attachments.ModAttachments;
-import com.azukii.diet.data.FoodCategories;
-import com.azukii.diet.data.FoodRegistry;
-import com.azukii.diet.data.PlayerActivityData;
+import com.azukii.diet.core.activity.PlayerActivityData;
+import com.azukii.diet.core.food.FoodCategories;
+import com.azukii.diet.core.food.FoodRegistry;
 import com.azukii.diet.gui.screen.FoodCategoriesScreen;
-import com.azukii.diet.profile.FoodProfile;
+import com.azukii.diet.item.FoodItemProfile;
 import com.mojang.datafixers.util.Either;
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ImageButton;
@@ -138,15 +135,9 @@ public class ModClientEvents {
             return;
         }
 
-        TooltipHandler.CacheKey cacheKey = new TooltipHandler.CacheKey(
-                BuiltInRegistries.ITEM.getKey(stack.getItem()),
-                FoodRegistry.getConfig().hashCode()
-        );
-        System.out.println("cacheKey = " + cacheKey);
+        TooltipHandler.CacheKey cacheKey = new TooltipHandler.CacheKey(BuiltInRegistries.ITEM.getKey(stack.getItem()), FoodRegistry.getConfig().hashCode());
         List<Component> cached = TooltipHandler.CACHE.get(cacheKey);
-        System.out.println("cached = " + cached);
         if (cached == null) {
-            System.out.println("ModClientEvents.onGatherTooltip" + stack);
             cached = TooltipHandler.buildFoodTooltipLines(stack);
             TooltipHandler.CACHE.put(cacheKey, cached);
         }
@@ -155,12 +146,8 @@ public class ModClientEvents {
             return;
         }
 
-        if (Minecraft.getInstance().hasShiftDown()) {
-            for (Component c : cached) {
-                event.getTooltipElements().add(Either.left(c));
-            }
-        } else {
-            event.getTooltipElements().add(Either.left(Component.translatable("tooltip.diet.category").withStyle(ChatFormatting.WHITE)));
+        for (Component c : cached) {
+            event.getTooltipElements().add(Either.left(c));
         }
     }
 
@@ -170,61 +157,26 @@ public class ModClientEvents {
         private static Identifier lastFoodDisplayed = null;
 
         public static List<Component> buildFoodTooltipLines(ItemStack stack) {
-            FoodProfile profile = FoodRegistry.getProfile(stack);
+            FoodItemProfile profile = FoodRegistry.getProfile(stack);
 
-            System.out.println("TooltipHandler.buildFoodTooltipLines" + 1);
             if (profile.isEmpty()) {
                 return List.of();
             }
-            System.out.println("TooltipHandler.buildFoodTooltipLines" + 2);
 
             List<Component> lines = new ArrayList<>();
-            // Food nutrition
+            // Food categories
             for (FoodCategories category : FoodCategories.VALUES) {
-                System.out.println("TooltipHandler.buildFoodTooltipLines" + category);
-
                 float value = profile.get(category);
                 if (value <= 0.0f) continue;
                 lines.add(createFoodCategoryLine(category.getName(), value, category.getColor()));
             }
 
-            // Actions
-            List<Component> actionLines = buildActionLines(profile);
-            if (!actionLines.isEmpty()) {
-                lines.add(Component.translatable("tooltip.diet.action").withStyle(ChatFormatting.GRAY));
-                lines.addAll(actionLines);
-            }
             return lines;
         }
 
         private static Component createFoodCategoryLine(String translationKey, float value, int color) {
             MutableComponent line = Component.literal("");
-            line.append(Component.literal(" - ").withStyle(ChatFormatting.GRAY));
-            line.append(Component.translatable(translationKey).append(": ").withStyle(Style.EMPTY.withColor(color)));
-            line.append(Component.literal(String.format("+%.1f", value)).withStyle(ChatFormatting.WHITE));
-            return line;
-        }
-
-        public static List<Component> buildActionLines(FoodProfile profile) {
-            float total = profile.total();
-            List<Component> lines = new java.util.ArrayList<>();
-            for (ActivitiesCategories action : ActivitiesCategories.VALUES) {
-                float relevant = profile.get(action.getRelatedCategory());
-                if (relevant <= 0.0f) continue;
-
-                float ratio = Math.min(relevant / total, 0.75f);
-                int percent = Math.round(ratio * 100);
-
-                lines.add(createActionLine(action, percent));
-            }
-            return lines;
-        }
-
-        private static Component createActionLine(ActivitiesCategories action, int percent) {
-            MutableComponent line = Component.literal("");
-            line.append(Component.literal(" - ").withStyle(ChatFormatting.GRAY));
-            line.append(Component.translatable(action.getTranslationKey()).append(": ").withStyle(ChatFormatting.GRAY));
-            line.append(Component.literal("-" + percent + "%").withStyle(ChatFormatting.GREEN));
+            line.append(Component.translatable(translationKey).withStyle(Style.EMPTY.withColor(color)));
             return line;
         }
 

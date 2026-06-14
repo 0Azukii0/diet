@@ -1,6 +1,6 @@
 package com.azukii.diet.mixin;
-import com.azukii.diet.activity.ActivitiesCategories;
-import com.azukii.diet.activity.ActivityEvents;
+import com.azukii.diet.core.activity.ActivitiesCategories;
+import com.azukii.diet.core.activity.ActivityEvents;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.spongepowered.asm.mixin.Mixin;

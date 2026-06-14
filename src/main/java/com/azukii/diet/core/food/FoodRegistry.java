@@ -1,6 +1,9 @@
-package com.azukii.diet.data;
+package com.azukii.diet.core.food;
 
-import com.azukii.diet.profile.FoodProfile;
+import com.azukii.diet.data.DatapackConfiguration;
+import com.azukii.diet.data.ModItemTagsProvider;
+import com.azukii.diet.event.ModClientEvents;
+import com.azukii.diet.item.FoodItemProfile;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
@@ -16,9 +19,10 @@ import java.util.Map;
  */
 public final class FoodRegistry {
     private static DatapackConfiguration config;
-    private static final Map<Identifier, FoodProfile> cache = new HashMap<>();
+    private static final Map<Identifier, FoodItemProfile> cache = new HashMap<>();
 
     public static void rebuildCache() {
+        ModClientEvents.TooltipHandler.CACHE.clear();
         cache.clear();
         for (Item item : BuiltInRegistries.ITEM) {
             Identifier id = BuiltInRegistries.ITEM.getKey(item);
@@ -28,7 +32,7 @@ public final class FoodRegistry {
             if (food == null) continue;
 
             Map<FoodCategories, Float> explicit = config.explicitProfile(id);
-            FoodProfile profile = explicit != null ? FoodProfile.of(explicit) : computeFromTags(item, food.nutrition());
+            FoodItemProfile profile = explicit != null ? FoodItemProfile.of(explicit) : computeFromTags(item, food.nutrition());
 
             if (!profile.isEmpty()) {
                 cache.put(id, profile);
@@ -36,18 +40,18 @@ public final class FoodRegistry {
         }
     }
 
-    private static FoodProfile computeFromTags(Item item, int nutrition) {
+    private static FoodItemProfile computeFromTags(Item item, int nutrition) {
         float value = nutrition * config.tagValueMultiplier();
         for (FoodCategories cat : FoodCategories.VALUES) {
             if (item.builtInRegistryHolder().is(cat.getTag())) {
-                return FoodProfile.single(cat, value);
+                return FoodItemProfile.single(cat, value);
             }
         }
-        return FoodProfile.EMPTY;
+        return FoodItemProfile.EMPTY;
     }
 
-    public static FoodProfile getProfile(ItemStack stack) {
-        return cache.getOrDefault(BuiltInRegistries.ITEM.getKey(stack.getItem()), FoodProfile.EMPTY);
+    public static FoodItemProfile getProfile(ItemStack stack) {
+        return cache.getOrDefault(BuiltInRegistries.ITEM.getKey(stack.getItem()), FoodItemProfile.EMPTY);
     }
 
     public static float getMaxValue() {

@@ -1,6 +1,6 @@
-package com.azukii.diet.activity;
+package com.azukii.diet.core.activity;
 
-import com.azukii.diet.data.FoodCategories;
+import com.azukii.diet.core.food.FoodCategories;
 
 public enum ActivitiesCategories {
     SWIM(FoodCategories.FRUIT,       "tooltip.diet.action.swim"),

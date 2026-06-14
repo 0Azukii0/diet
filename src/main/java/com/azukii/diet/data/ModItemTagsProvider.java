@@ -9,6 +9,7 @@ import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.ItemTagsProvider;
 
 import java.util.concurrent.CompletableFuture;
@@ -34,37 +35,25 @@ public class ModItemTagsProvider extends ItemTagsProvider {
                 .addTag(VEGETABLES)
                 .addTag(SUGARS);
         this.tag(FRUITS)
-                .add(Items.APPLE)
-                .add(Items.GOLDEN_APPLE)
-                .add(Items.ENCHANTED_GOLDEN_APPLE)
-                .add(Items.MELON_SLICE)
-                .add(Items.CHORUS_FRUIT)
-                .add(Items.SWEET_BERRIES)
-                .add(Items.GLOW_BERRIES);
+                .addTag(Tags.Items.FOODS_FRUIT)
+                .addTag(Tags.Items.FOODS_BERRY);
         this.tag(GRAINS)
-                .add(Items.WHEAT)
-                .add(Items.WHEAT_SEEDS);
+                .addTag(Tags.Items.SEEDS)
+                .addTag(Tags.Items.FOODS_BREAD)
+                .add(Items.WHEAT);
         this.tag(PROTEINS)
                 .addTag(ItemTags.MEAT)
-                .add(Items.COD)
-                .add(Items.SALMON)
-                .add(Items.TROPICAL_FISH)
-                .add(Items.PUFFERFISH)
-                .add(Items.COOKED_COD)
-                .add(Items.COOKED_SALMON);
+                .addTag(ItemTags.FISHES);
         this.tag(VEGETABLES)
-                .add(Items.CARROT)
-                .add(Items.GOLDEN_CARROT)
-                .add(Items.POTATO)
+                .addTag(Tags.Items.FOODS_VEGETABLE)
                 .add(Items.BAKED_POTATO)
                 .add(Items.POISONOUS_POTATO)
-                .add(Items.BEETROOT)
                 .add(Items.DRIED_KELP)
                 .add(Items.SEA_PICKLE);
         this.tag(SUGARS)
+                .addTag(Tags.Items.FOODS_COOKIE)
                 .add(Items.SUGAR)
                 .add(Items.HONEY_BOTTLE)
-                .add(Items.COOKIE)
                 .add(Items.CAKE)
                 .add(Items.PUMPKIN_PIE);
     }

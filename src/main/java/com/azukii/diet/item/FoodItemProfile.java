@@ -1,6 +1,6 @@
-package com.azukii.diet.profile;
+package com.azukii.diet.item;
 
-import com.azukii.diet.data.FoodCategories;
+import com.azukii.diet.core.food.FoodCategories;
 
 import java.util.Collections;
 import java.util.EnumMap;
@@ -10,21 +10,21 @@ import java.util.StringJoiner;
 /**
  * Immutable per-item diet contribution profile.
  */
-public final class FoodProfile {
-    public static final FoodProfile EMPTY = new FoodProfile(Collections.emptyMap());
+public final class FoodItemProfile {
+    public static final FoodItemProfile EMPTY = new FoodItemProfile(Collections.emptyMap());
 
     private final Map<FoodCategories, Float> values;
 
-    private FoodProfile(Map<FoodCategories, Float> values) {
+    private FoodItemProfile(Map<FoodCategories, Float> values) {
         this.values = values;
     }
 
-    public static FoodProfile single(FoodCategories category, float value) {
+    public static FoodItemProfile single(FoodCategories category, float value) {
         if (value <= 0f) return EMPTY;
-        return new FoodProfile(Map.of(category, value));
+        return new FoodItemProfile(Map.of(category, value));
     }
 
-    public static FoodProfile of(Map<FoodCategories, Float> values) {
+    public static FoodItemProfile of(Map<FoodCategories, Float> values) {
         if (values == null || values.isEmpty()) return EMPTY;
 
         EnumMap<FoodCategories, Float> clean = new EnumMap<>(FoodCategories.class);
@@ -32,7 +32,7 @@ public final class FoodProfile {
             if (v > 0f) clean.put(cat, v);
         });
 
-        return clean.isEmpty() ? EMPTY : new FoodProfile(Collections.unmodifiableMap(clean));
+        return clean.isEmpty() ? EMPTY : new FoodItemProfile(Collections.unmodifiableMap(clean));
     }
 
     public float get(FoodCategories category) {
@@ -72,7 +72,7 @@ public final class FoodProfile {
 
     @Override
     public boolean equals(Object obj) {
-        return obj instanceof FoodProfile other && values.equals(other.values);
+        return obj instanceof FoodItemProfile other && values.equals(other.values);
     }
 
     @Override

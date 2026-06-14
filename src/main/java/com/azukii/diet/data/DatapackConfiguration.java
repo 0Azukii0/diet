@@ -1,5 +1,6 @@
 package com.azukii.diet.data;
 
+import com.azukii.diet.core.food.FoodCategories;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.Identifier;
