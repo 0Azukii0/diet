@@ -1,6 +1,5 @@
 package com.azukii.diet.core.food;
 
-import com.azukii.diet.DietMod;
 import com.azukii.diet.core.DecayData;
 import com.azukii.diet.item.FoodItemProfile;
 import net.minecraft.network.RegistryFriendlyByteBuf;
@@ -14,13 +13,20 @@ import java.util.Arrays;
 
 public class ModFoodData implements ValueIOSerializable, DecayData {
     public static final int FOOD_CATEGORIES_MAX_LEVEL = 4;
+    public static final int FOOD_CATEGORIES_MIN_LEVEL = 1;
 
     private final float[] values = new float[FoodCategories.COUNT];
-    private int[] levels = new int[FoodCategories.COUNT];
+    private final int[] levels = defaultLevels();
     private long lastDecayTimeMs = System.currentTimeMillis();
     private boolean initialized = false;
 
-    public float getValues(FoodCategories category) {
+    private static int[] defaultLevels() {
+        int[] l = new int[FoodCategories.COUNT];
+        Arrays.fill(l, FOOD_CATEGORIES_MIN_LEVEL);
+        return l;
+    }
+
+    public float getValue(FoodCategories category) {
         return values[category.ordinal()];
     }
 
@@ -83,7 +89,7 @@ public class ModFoodData implements ValueIOSerializable, DecayData {
                 values[idx] = newValue;
                 changed = true;
 
-                if (newValue == 0.0f && levels[idx] > 1) {
+                if (newValue == 0.0f && levels[idx] > FOOD_CATEGORIES_MIN_LEVEL) {
                     levels[idx]--;
                 }
             }
@@ -109,6 +115,8 @@ public class ModFoodData implements ValueIOSerializable, DecayData {
         if (initialized) return;
         float target = FoodRegistry.getMaxValue() * Math.clamp(percent, 0.0f, 1.0f);
         Arrays.fill(values, target);
+        Arrays.fill(levels, FOOD_CATEGORIES_MIN_LEVEL);
+        initialized = true;
     }
 
     public void applyNetworkUpdate(float[] newValues, int[] newLevels) {
@@ -116,7 +124,9 @@ public class ModFoodData implements ValueIOSerializable, DecayData {
             values[i] = Math.max(0.0f, newValues[i]);
         }
         if (newLevels.length == levels.length) {
-            System.arraycopy(newLevels, 0, levels, 0, levels.length);
+            for (int i = 0; i < levels.length; i++) {
+                levels[i] = Math.max(FOOD_CATEGORIES_MIN_LEVEL, newLevels[i]);
+            }
         }
     }
 
@@ -138,7 +148,10 @@ public class ModFoodData implements ValueIOSerializable, DecayData {
         lastDecayTimeMs = input.keySet().contains("lastDecayTimeMs")
                 ? input.getLongOr("lastDecayTimeMs", 0L)
                 : System.currentTimeMillis();
-        levels = input.getIntArray("levels").orElse(levels);
+        int[] saved = input.getIntArray("levels").orElse(defaultLevels());
+        for (int i = 0; i < levels.length; i++) {
+            levels[i] = Math.max(FOOD_CATEGORIES_MIN_LEVEL, i < saved.length ? saved[i] : FOOD_CATEGORIES_MIN_LEVEL);
+        }
         initialized = input.getBooleanOr("initialized", false);
     }
 

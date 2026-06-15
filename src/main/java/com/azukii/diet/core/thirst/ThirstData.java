@@ -11,6 +11,7 @@ import org.jspecify.annotations.NonNull;
 
 public class ThirstData implements ValueIOSerializable, DecayData {
     public static final int THIRST_MAX_LEVEL = 4;
+    public static final int THIRST_MIN_LEVEL = 1;
 
     private float thirstValue = 0.0f;
     private int thirstLevel = 0;
@@ -58,7 +59,7 @@ public class ThirstData implements ValueIOSerializable, DecayData {
 
         thirstValue = newValue;
 
-        if (newValue == 0.0f && thirstLevel > 1) {
+        if (newValue == 0.0f && thirstLevel > THIRST_MIN_LEVEL) {
             thirstLevel--;
         }
 
@@ -68,6 +69,7 @@ public class ThirstData implements ValueIOSerializable, DecayData {
     public void ensureInitialized(float percent) {
         if (initialized) return;
         thirstValue = DatapackConfiguration.DEFAULT_MAX_VALUES * Math.clamp(percent, 0.0f, 1.0f);
+        thirstLevel = THIRST_MAX_LEVEL;
         initialized = true;
     }
 
@@ -77,7 +79,7 @@ public class ThirstData implements ValueIOSerializable, DecayData {
 
     public void applyNetworkUpdate(float thirstValue, int thirstLevel) {
         this.thirstValue = Math.max(0.0f, thirstValue);
-        this.thirstLevel = thirstLevel;
+        this.thirstLevel = Math.max(THIRST_MIN_LEVEL, thirstLevel);
     }
 
     @Override
@@ -91,7 +93,7 @@ public class ThirstData implements ValueIOSerializable, DecayData {
     @Override
     public void deserialize(ValueInput input) {
         thirstValue = input.getFloatOr("thirstValue", 0f);
-        thirstLevel = input.getIntOr("thirstLevel", 0);
+        thirstLevel = Math.max(THIRST_MIN_LEVEL, input.getIntOr("thirstLevel", THIRST_MIN_LEVEL));
         lastDecayTimeMs = input.keySet().contains("lastDecayTimeMs")
                 ? input.getLongOr("lastDecayTimeMs", 0L)
                 : System.currentTimeMillis();
