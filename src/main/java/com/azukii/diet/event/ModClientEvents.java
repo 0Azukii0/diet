@@ -2,13 +2,13 @@ package com.azukii.diet.event;
 
 import com.azukii.diet.DietMod;
 import com.azukii.diet.attachments.ModAttachments;
+import com.azukii.diet.component.ModComponents;
 import com.azukii.diet.core.activity.PlayerActivityData;
 import com.azukii.diet.core.food.FoodCategories;
 import com.azukii.diet.core.food.FoodRegistry;
 import com.azukii.diet.gui.screen.FoodStatsRenderState;
 import com.azukii.diet.gui.screen.FoodStatsScreen;
 import com.azukii.diet.item.FoodItemProfile;
-import com.mojang.datafixers.util.Either;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -22,18 +22,16 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
-import net.neoforged.neoforge.client.event.RenderTooltipEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
 import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+import net.neoforged.neoforge.event.entity.player.ItemTooltipEvent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @EventBusSubscriber(modid = DietMod.MODID, value = Dist.CLIENT)
 public class ModClientEvents {
@@ -64,27 +62,27 @@ public class ModClientEvents {
         ItemStack offHand = player.getOffhandItem();
         boolean holdingFood = (!mainHand.isEmpty() && mainHand.get(DataComponents.FOOD) != null) || (!offHand.isEmpty() && offHand.get(DataComponents.FOOD) != null);
 
-        if (holdingFood) FoodTooltipHandler.hudTimer = 3f;
+        if (holdingFood) LastEatenFoodIcon.hudTimer = 3f;
 
         // Last food has changed
         Identifier currentLastFood = player.getData(ModAttachments.PLAYER_ACTIVITY).getLastFood();
-        if (!currentLastFood.equals(FoodTooltipHandler.lastFoodDisplayed)) {
-            boolean isFirstInit = FoodTooltipHandler.lastFoodDisplayed == null;
-            FoodTooltipHandler.lastFoodDisplayed = currentLastFood;
+        if (!currentLastFood.equals(LastEatenFoodIcon.lastFoodDisplayed)) {
+            boolean isFirstInit = LastEatenFoodIcon.lastFoodDisplayed == null;
+            LastEatenFoodIcon.lastFoodDisplayed = currentLastFood;
             if (!isFirstInit) {
-                FoodTooltipHandler.hudTimer = 3f;
+                LastEatenFoodIcon.hudTimer = 3f;
             }
         }
 
-        if (FoodTooltipHandler.hudTimer > 0f) {
-            FoodTooltipHandler.hudTimer = Math.max(0f, FoodTooltipHandler.hudTimer - (1f / 20f));
+        if (LastEatenFoodIcon.hudTimer > 0f) {
+            LastEatenFoodIcon.hudTimer = Math.max(0f, LastEatenFoodIcon.hudTimer - (1f / 20f));
         }
     }
 
     @SubscribeEvent
     public static void onRenderHud(RenderGuiLayerEvent.Post event) {
         if (event.getName() != VanillaGuiLayers.FOOD_LEVEL) return;
-        if (FoodTooltipHandler.hudTimer <= 0f) return;
+        if (LastEatenFoodIcon.hudTimer <= 0f) return;
 
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
@@ -118,58 +116,24 @@ public class ModClientEvents {
         graphics.pose().popMatrix();
     }
 
-    @SubscribeEvent
-    public static void onGatherTooltip(RenderTooltipEvent.GatherComponents event) {
-        ItemStack stack = event.getItemStack();
-        if (stack.isEmpty()) {
-            return;
-        }
-
-        boolean isFood = stack.get(DataComponents.FOOD) != null;
-        if (!isFood) {
-            return;
-        }
-
-        FoodTooltipHandler.CacheKey cacheKey = new FoodTooltipHandler.CacheKey(BuiltInRegistries.ITEM.getKey(stack.getItem()), FoodRegistry.getConfig().hashCode());
-        List<Component> cached = FoodTooltipHandler.CACHE.get(cacheKey);
-        if (cached == null) {
-            cached = FoodTooltipHandler.buildFoodTooltipLines(stack);
-            FoodTooltipHandler.CACHE.put(cacheKey, cached);
-        }
-
-        if (cached.isEmpty()) {
-            return;
-        }
-
-        for (Component c : cached) {
-            event.getTooltipElements().add(Either.left(c));
-        }
-    }
-
-    public static class FoodTooltipHandler {
-        public static final Map<CacheKey, List<Component>> CACHE = new HashMap<>();
-        private static float hudTimer = 0f;
-        private static Identifier lastFoodDisplayed = null;
-
-        public static List<Component> buildFoodTooltipLines(ItemStack stack) {
-            FoodItemProfile profile = FoodRegistry.getProfile(stack);
-
-            if (profile.isEmpty()) {
-                return List.of();
-            }
-
-            List<Component> lines = new ArrayList<>();
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void onGatherTooltip(ItemTooltipEvent event) {
+        ItemStack itemStack = event.getItemStack();
+        List<Component> toolTips = event.getToolTip();
+        if (itemStack.has(ModComponents.THIRST)) toolTips.add(Component.translatable("tooltip.diet.thirst.level_added", Objects.requireNonNull(itemStack.get(ModComponents.THIRST)).value()));
+        if (itemStack.has(DataComponents.FOOD)) {
+            FoodItemProfile profile = FoodRegistry.getProfile(itemStack);
             for (FoodCategories category : FoodCategories.VALUES) {
                 float value = profile.get(category);
                 if (value <= 0.0f) continue;
-                lines.add(Component.empty()
-                        .append(Component.translatable(category.getName()).withColor(category.getColor()))
+                toolTips.add(Component.empty().append(Component.translatable(category.getName()).withColor(category.getColor()))
                         .append(Component.translatable("tooltip.diet.category.level_added").withColor(0xFFFFFF)));
             }
-
-            return lines;
         }
+    }
 
-        public record CacheKey(Identifier id, int configHash) {}
+    public static class LastEatenFoodIcon {
+        private static float hudTimer = 0f;
+        private static Identifier lastFoodDisplayed = null;
     }
 }

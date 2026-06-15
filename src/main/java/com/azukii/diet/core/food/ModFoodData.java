@@ -82,6 +82,10 @@ public class ModFoodData implements ValueIOSerializable, DecayData {
             if (newValue != value) {
                 values[idx] = newValue;
                 changed = true;
+
+                if (newValue == 0.0f && levels[idx] > 1) {
+                    levels[idx]--;
+                }
             }
         }
         return changed;
@@ -152,8 +156,6 @@ public class ModFoodData implements ValueIOSerializable, DecayData {
                     for (int i = 0; i < levelsLen; i++) levels[i] = buf.readVarInt();
 
                     data.applyNetworkUpdate(values, levels);
-                    DietMod.LOGGER.debug("Loaded ModFoodData with values: {}", Arrays.toString(values));
-                    DietMod.LOGGER.debug("Loaded ModFoodData with levels: {}", Arrays.toString(levels));
                     return data;
                 }
 

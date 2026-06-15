@@ -11,6 +11,7 @@ import net.minecraft.world.food.FoodProperties;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,16 +23,15 @@ public final class FoodRegistry {
     private static final Map<Identifier, FoodItemProfile> cache = new HashMap<>();
 
     public static void rebuildCache() {
-        ModClientEvents.FoodTooltipHandler.CACHE.clear();
         cache.clear();
         for (Item item : BuiltInRegistries.ITEM) {
             Identifier id = BuiltInRegistries.ITEM.getKey(item);
-            if (!item.builtInRegistryHolder().is(ModItemTagsProvider.FOODS_CATEGORIES)) continue;
+            if (!BuiltInRegistries.ITEM.wrapAsHolder(item).is(ModItemTagsProvider.FOODS_CATEGORIES)) continue;
 
             FoodProperties food = item.components().get(DataComponents.FOOD);
             if (food == null) continue;
 
-            Map<FoodCategories, Float> explicit = config.explicitProfile(id);
+            Map<FoodCategories, Float> explicit = config.explicitProfile(item);
             FoodItemProfile profile = explicit != null ? FoodItemProfile.of(explicit) : computeFromTags(item, food.nutrition());
 
             if (!profile.isEmpty()) {
@@ -42,12 +42,15 @@ public final class FoodRegistry {
 
     private static FoodItemProfile computeFromTags(Item item, int nutrition) {
         float value = nutrition * config.tagValueMultiplier();
+        EnumMap<FoodCategories, Float> values = new EnumMap<>(FoodCategories.class);
+
         for (FoodCategories cat : FoodCategories.VALUES) {
-            if (item.builtInRegistryHolder().is(cat.getTag())) {
-                return FoodItemProfile.single(cat, value);
+            if (BuiltInRegistries.ITEM.wrapAsHolder(item).is(cat.getTag())) {
+                values.put(cat, value);
             }
         }
-        return FoodItemProfile.EMPTY;
+
+        return FoodItemProfile.of(values);
     }
 
     public static FoodItemProfile getProfile(ItemStack stack) {

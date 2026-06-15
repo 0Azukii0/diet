@@ -3,6 +3,7 @@ package com.azukii.diet.core.activity;
 import com.azukii.diet.attachments.ModAttachments;
 import com.azukii.diet.core.food.FoodRegistry;
 import com.azukii.diet.core.food.ModFoodData;
+import com.azukii.diet.core.thirst.ThirstData;
 import com.azukii.diet.item.FoodItemProfile;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -48,5 +49,11 @@ public class ActivityEvents {
         float barLevel = maxVal > 0f ? Math.clamp(data.getValues(source.getRelatedCategory()) / maxVal, 0f, 1f) : 0f;
 
         return baseRatio * barLevel;
+    }
+
+    public static float thirstExhaustionMultiplier(Player player) {
+        ThirstData data = player.getData(ModAttachments.THIRST_DATA);
+        int level = data.getThirstLevel();
+        return 1.0f + (float)(ThirstData.THIRST_MAX_LEVEL - level) / ThirstData.THIRST_MAX_LEVEL;
     }
 }

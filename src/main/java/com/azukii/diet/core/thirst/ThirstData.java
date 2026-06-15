@@ -57,6 +57,11 @@ public class ThirstData implements ValueIOSerializable, DecayData {
         if (newValue == value) return false;
 
         thirstValue = newValue;
+
+        if (newValue == 0.0f && thirstLevel > 1) {
+            thirstLevel--;
+        }
+
         return true;
     }
 

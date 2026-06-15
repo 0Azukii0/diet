@@ -19,11 +19,6 @@ public final class FoodItemProfile {
         this.values = values;
     }
 
-    public static FoodItemProfile single(FoodCategories category, float value) {
-        if (value <= 0f) return EMPTY;
-        return new FoodItemProfile(Map.of(category, value));
-    }
-
     public static FoodItemProfile of(Map<FoodCategories, Float> values) {
         if (values == null || values.isEmpty()) return EMPTY;
 
@@ -51,15 +46,6 @@ public final class FoodItemProfile {
         float sum = 0f;
         for (float v : values.values()) sum += v;
         return sum;
-    }
-
-    public float ratioFor(FoodCategories category) {
-        float t = total();
-        return t == 0f ? 0f : get(category) / t;
-    }
-
-    public boolean hasCategory(FoodCategories category) {
-        return values.containsKey(category);
     }
 
     @Override

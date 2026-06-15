@@ -14,7 +14,7 @@ public class LivingEntityMixin {
     protected void heal(float heal, CallbackInfo ci) {
         if((((LivingEntity) (Object) this)) instanceof Player player) {
             float ratio = ActivityEvents.exhaustionReductionLongSheen(player, ActivitiesCategories.HEAL);
-            player.causeFoodExhaustion(6.0F * heal * ratio);
+            player.causeFoodExhaustion(6.0F * heal * ratio * ActivityEvents.thirstExhaustionMultiplier(player));
         }
     }
 
@@ -23,9 +23,9 @@ public class LivingEntityMixin {
         if((((LivingEntity) (Object) this)) instanceof Player player) {
             float ratio = ActivityEvents.exhaustionReductionLongSheen(player, ActivitiesCategories.JUMP);
             if (player.isSprinting()) {
-                player.causeFoodExhaustion(0.2F * ratio);
+                player.causeFoodExhaustion(0.2F * ratio * ActivityEvents.thirstExhaustionMultiplier(player));
             } else {
-                player.causeFoodExhaustion(0.05F * ratio);
+                player.causeFoodExhaustion(0.05F * ratio * ActivityEvents.thirstExhaustionMultiplier(player));
             }
         }
     }

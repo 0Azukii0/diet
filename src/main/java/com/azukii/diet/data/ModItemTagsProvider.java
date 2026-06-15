@@ -21,6 +21,7 @@ public class ModItemTagsProvider extends ItemTagsProvider {
     private static final TagKey<Item> PROTEINS = register("proteins");
     private static final TagKey<Item> VEGETABLES = register("vegetables");
     private static final TagKey<Item> SUGARS = register("sugars");
+    public static final TagKey<Item> THIRST = register("thirst");
 
     public ModItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
         super(output, lookupProvider, DietMod.MODID);
@@ -40,21 +41,33 @@ public class ModItemTagsProvider extends ItemTagsProvider {
         this.tag(GRAINS)
                 .addTag(Tags.Items.SEEDS)
                 .addTag(Tags.Items.FOODS_BREAD)
+                .addTag(Tags.Items.FOODS_COOKIE)
                 .add(Items.WHEAT);
         this.tag(PROTEINS)
                 .addTag(ItemTags.MEAT)
-                .addTag(ItemTags.FISHES);
+                .addTag(ItemTags.FISHES)
+                .addTag(ItemTags.EGGS)
+                .add(Items.RABBIT_STEW)
+                .add(Items.SPIDER_EYE)
+                .add(Items.MILK_BUCKET);
         this.tag(VEGETABLES)
                 .addTag(Tags.Items.FOODS_VEGETABLE)
                 .add(Items.BAKED_POTATO)
                 .add(Items.POISONOUS_POTATO)
                 .add(Items.DRIED_KELP)
-                .add(Items.SEA_PICKLE);
+                .add(Items.SEA_PICKLE)
+                .add(Items.COCOA_BEANS)
+                .addTag(Tags.Items.MUSHROOMS)
+                .add(Items.MUSHROOM_STEW)
+                .add(Items.BEETROOT_SOUP)
+                .add(Items.PUMPKIN_PIE)
+                .add(Items.RABBIT_STEW);
         this.tag(SUGARS)
                 .addTag(Tags.Items.FOODS_COOKIE)
                 .add(Items.SUGAR)
                 .add(Items.HONEY_BOTTLE)
                 .add(Items.CAKE)
+                .add(Items.COCOA_BEANS)
                 .add(Items.PUMPKIN_PIE);
     }
 

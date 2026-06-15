@@ -2,22 +2,40 @@ package com.azukii.diet.event;
 
 import com.azukii.diet.DietMod;
 import com.azukii.diet.attachments.ModAttachments;
+import com.azukii.diet.component.ModComponents;
+import com.azukii.diet.component.ThirstComponent;
 import com.azukii.diet.core.DecayData;
 import com.azukii.diet.core.food.FoodRegistry;
 import com.azukii.diet.core.food.ModFoodData;
 import com.azukii.diet.core.thirst.ThirstData;
 import com.azukii.diet.data.DatapackConfiguration;
 import com.azukii.diet.data.FoodDataLoader;
+import com.azukii.diet.data.ModItemTagsProvider;
 import com.azukii.diet.item.FoodItemProfile;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.food.FoodProperties;
+import net.minecraft.world.food.Foods;
+import net.minecraft.world.item.*;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.component.Consumable;
+import net.minecraft.world.item.component.Consumables;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLLoadCompleteEvent;
 import net.neoforged.neoforge.attachment.AttachmentType;
+import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.ModifyDefaultComponentsEvent;
+import net.neoforged.neoforge.event.OnDatapackSyncEvent;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
@@ -26,14 +44,54 @@ import net.neoforged.neoforge.resource.ListenerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 @EventBusSubscriber(modid = DietMod.MODID)
 public class ModEvents {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ModEvents.class);
-
     @SubscribeEvent
     public static void onServerStarted(ServerStartedEvent event) {
-        LOGGER.debug("onServerStarted: FoodRegistry.rebuildCache()");
         FoodRegistry.rebuildCache();
+    }
+
+
+
+    @SubscribeEvent(priority = EventPriority.LOWEST)
+    public static void modifyComponents(ModifyDefaultComponentsEvent event) {
+        event.modify(Items.POTION, (components, context, item) -> components.set(ModComponents.THIRST.get(), new ThirstComponent(1)));
+        event.modify(Items.SUGAR, (components, context, item) -> {
+            components.set(DataComponents.CONSUMABLE, Consumables.DEFAULT_FOOD);
+            components.set(DataComponents.FOOD, new FoodProperties(1,1.0f, true));
+        });
+        event.modify(Items.WHEAT, (components, context, item) -> {
+            components.set(DataComponents.CONSUMABLE, Consumables.DEFAULT_FOOD);
+            components.set(DataComponents.FOOD, new FoodProperties(2,1.0f, false));
+        });
+        event.modify(Items.MILK_BUCKET, (components, context, item) -> {
+            components.set(DataComponents.CONSUMABLE, Consumables.DEFAULT_FOOD);
+            components.set(DataComponents.FOOD, new FoodProperties(5,2.0f, false));
+        });
+        event.modify(Items.SEA_PICKLE, (components, context, item) -> {
+            components.set(DataComponents.CONSUMABLE, Consumables.DEFAULT_FOOD);
+            components.set(DataComponents.FOOD, new FoodProperties(1,1.0f, false));
+        });
+        event.modify(Items.COCOA_BEANS, (components, context, item) -> {
+            components.set(DataComponents.CONSUMABLE, Consumables.DEFAULT_FOOD);
+            components.set(DataComponents.FOOD, new FoodProperties(1,3.0f, false));
+        });
+
+        //TODO : tags not working
+        event.modifyMatching((item, components) -> BuiltInRegistries.ITEM.wrapAsHolder(item).is(Tags.Items.SEEDS), (components, context, item) -> {
+            components.set(DataComponents.CONSUMABLE, Consumables.DEFAULT_FOOD);
+            components.set(DataComponents.FOOD, new FoodProperties(1,1.0f, false));
+        });
+        event.modifyMatching((item, components) -> BuiltInRegistries.ITEM.wrapAsHolder(item).is(Tags.Items.EGGS), (components, context, item) -> {
+            components.set(DataComponents.CONSUMABLE, Consumables.POISONOUS_POTATO);
+            components.set(DataComponents.FOOD, Foods.POISONOUS_POTATO);
+        });
+        event.modifyMatching((item, components) -> BuiltInRegistries.ITEM.wrapAsHolder(item).is(Tags.Items.MUSHROOMS), (components, context, item) -> {
+            components.set(DataComponents.CONSUMABLE, Consumables.DEFAULT_FOOD);
+            components.set(DataComponents.FOOD, new FoodProperties(2,1.0f, false));
+        });
     }
 
     @SubscribeEvent

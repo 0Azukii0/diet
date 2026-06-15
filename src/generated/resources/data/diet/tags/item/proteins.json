@@ -1,6 +1,10 @@
 {
   "values": [
     "#minecraft:meat",
-    "#minecraft:fishes"
+    "#minecraft:fishes",
+    "#minecraft:eggs",
+    "minecraft:rabbit_stew",
+    "minecraft:spider_eye",
+    "minecraft:milk_bucket"
   ]
 }

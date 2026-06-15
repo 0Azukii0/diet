@@ -3,7 +3,9 @@ package com.azukii.diet.data;
 import com.azukii.diet.core.food.FoodCategories;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
+import net.minecraft.world.item.Item;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -149,8 +151,8 @@ public record DatapackConfiguration(
      * Returns the explicit per-category values for an item if defined in the "items" section,
      * or {@code null} if the item should fall back to tag-based resolution.
      */
-    public Map<FoodCategories, Float> explicitProfile(Identifier itemId) {
-        return items.get(itemId);
+    public Map<FoodCategories, Float> explicitProfile(Item item) {
+        return items.get(BuiltInRegistries.ITEM.getKey(item));
     }
 
     private static int readInt(JsonObject json, String key, int fallback) {

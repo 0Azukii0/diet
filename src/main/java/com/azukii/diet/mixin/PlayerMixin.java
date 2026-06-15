@@ -34,7 +34,7 @@ public abstract class PlayerMixin extends LivingEntity {
         if (!player.getActiveEffects().isEmpty()) {
             for (MobEffectInstance effect : player.getActiveEffects()) {
                 if (effect.getEffect() == MobEffects.HUNGER) {
-                    player.causeFoodExhaustion(0.0025F * (float) (player.getEffect(MobEffects.HUNGER).getAmplifier() + 1) * ActivityEvents.exhaustionReductionShortSheen(player, ActivitiesCategories.EFFECT));
+                    player.causeFoodExhaustion(0.0025F * (float) (player.getEffect(MobEffects.HUNGER).getAmplifier() + 1) * ActivityEvents.exhaustionReductionShortSheen(player, ActivitiesCategories.EFFECT) * ActivityEvents.thirstExhaustionMultiplier(player));
                     break;
                 }
             }
@@ -71,13 +71,13 @@ public abstract class PlayerMixin extends LivingEntity {
     protected void attack(CallbackInfo ci) {
         Player player = (((Player) (Object) this));
         float ratio = ActivityEvents.exhaustionReductionLongSheen(player, ActivitiesCategories.ATTACK);
-        player.causeFoodExhaustion(0.1F * ratio);
+        player.causeFoodExhaustion(0.1F * ratio * ActivityEvents.thirstExhaustionMultiplier(player));
     }
 
     @Inject(at = @At("TAIL"), method = "hurtServer")
     protected void hurt(ServerLevel level, DamageSource source, float damage, CallbackInfoReturnable<Boolean> cir) {
         Player player = (((Player) (Object) this));
         float ratio = ActivityEvents.exhaustionReductionLongSheen(player, ActivitiesCategories.HURT);
-        player.causeFoodExhaustion(source.getFoodExhaustion() * ratio);
+        player.causeFoodExhaustion(source.getFoodExhaustion() * ratio * ActivityEvents.thirstExhaustionMultiplier(player));
     }
 }

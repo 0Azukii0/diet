@@ -2,6 +2,7 @@
   "values": [
     "#c:seeds",
     "#c:foods/bread",
+    "#c:foods/cookie",
     "minecraft:wheat"
   ]
 }

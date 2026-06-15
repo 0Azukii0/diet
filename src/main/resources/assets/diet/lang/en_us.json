@@ -7,7 +7,7 @@
   "tooltip.diet.category.vegetable": "Vegetables:",
   "tooltip.diet.category.fruit": "Fruits:",
   "tooltip.diet.category.sugar": "Sugars:",
-  "tooltip.diet.category.level_added": " +1 Level",
+  "tooltip.diet.category.level_added": " +1",
   "tooltip.diet.category.level": " %s/4",
   "tooltip.diet.category.value": "%.2f%%",
   "tooltip.diet.action": "Reduces Exhaustion When:",
@@ -21,5 +21,6 @@
   "tooltip.diet.action.attack": "Fighting",
   "tooltip.diet.action.hurt": "Taking damage",
   "tooltip.diet.action.heal": "Healing",
-  "tooltip.diet.action.effect": "Hunger effect"
+  "tooltip.diet.action.effect": "Hunger effect",
+  "tooltip.diet.thirst.level_added": "§bThirst§r: +%s"
 }

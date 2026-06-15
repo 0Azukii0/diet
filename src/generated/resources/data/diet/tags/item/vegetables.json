@@ -4,6 +4,12 @@
     "minecraft:baked_potato",
     "minecraft:poisonous_potato",
     "minecraft:dried_kelp",
-    "minecraft:sea_pickle"
+    "minecraft:sea_pickle",
+    "minecraft:cocoa_beans",
+    "#c:mushrooms",
+    "minecraft:mushroom_stew",
+    "minecraft:beetroot_soup",
+    "minecraft:pumpkin_pie",
+    "minecraft:rabbit_stew"
   ]
 }

@@ -25,6 +25,6 @@ public class BlockMixin {
     @Inject(at = @At("TAIL"), method = "playerDestroy")
     protected void playerDestroy(Level level, Player player, BlockPos pos, BlockState state, BlockEntity blockEntity, ItemStack destroyedWith, CallbackInfo ci) {
         float ratio = ActivityEvents.exhaustionReductionLongSheen(player, ActivitiesCategories.MINE);
-        player.causeFoodExhaustion(0.005F * ratio);
+        player.causeFoodExhaustion(0.005F * ratio * ActivityEvents.thirstExhaustionMultiplier(player));
     }
 }
