@@ -1,6 +1,6 @@
 package com.azukii.diet.mixin.gui;
 
-import com.azukii.diet.gui.screen.FoodStatsRenderState;
+import com.azukii.diet.client.gui.screen.FoodStatsRenderState;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

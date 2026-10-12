@@ -3,11 +3,8 @@
   "package": "com.azukii.diet.mixin",
   "compatibilityLevel": "JAVA_25",
   "mixins": [
-    "BlockMixin",
     "FoodDataMixin",
-    "ItemMixin",
-    "LivingEntityMixin",
-    "PlayerMixin"
+    "FoodPropertiesMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,6 +1,7 @@
 {
   "values": [
     "#c:foods/fruit",
-    "#c:foods/berry"
+    "#c:foods/berry",
+    "minecraft:glistering_melon_slice"
   ]
 }

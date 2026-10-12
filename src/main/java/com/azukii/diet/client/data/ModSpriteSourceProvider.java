@@ -1,4 +1,4 @@
-package com.azukii.diet.data;
+package com.azukii.diet.client.data;
 
 import com.azukii.diet.DietMod;
 import net.minecraft.core.HolderLookup;

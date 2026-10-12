@@ -1,9 +1,9 @@
 package com.azukii.diet.mixin.gui;
 
 import com.azukii.diet.DietMod;
-import com.azukii.diet.gui.IDietInventoryScreen;
-import com.azukii.diet.gui.screen.FoodStatsRenderState;
-import com.azukii.diet.gui.screen.FoodStatsScreen;
+import com.azukii.diet.client.gui.IDietInventoryScreen;
+import com.azukii.diet.client.gui.screen.FoodStatsRenderState;
+import com.azukii.diet.client.gui.screen.FoodStatsScreen;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.WidgetSprites;

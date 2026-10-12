@@ -1,5 +1,6 @@
-package com.azukii.diet;
+package com.azukii.diet.client;
 
+import com.azukii.diet.DietMod;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -9,8 +10,8 @@ import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 @Mod(value = DietMod.MODID, dist = Dist.CLIENT)
 @EventBusSubscriber(modid = DietMod.MODID, value = Dist.CLIENT)
-public class DietClientMod {
-    public DietClientMod(ModContainer container) {
+public class ConfigMod {
+    public ConfigMod(ModContainer container) {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 }

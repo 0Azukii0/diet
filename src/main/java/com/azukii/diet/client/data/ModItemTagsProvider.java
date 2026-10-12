@@ -1,4 +1,4 @@
-package com.azukii.diet.data;
+package com.azukii.diet.client.data;
 
 import com.azukii.diet.DietMod;
 import net.minecraft.core.HolderLookup;
@@ -16,12 +16,11 @@ import java.util.concurrent.CompletableFuture;
 
 public class ModItemTagsProvider extends ItemTagsProvider {
     public static final TagKey<Item> FOODS_CATEGORIES = register("foods_categories");
-    private static final TagKey<Item> FRUITS = register("fruits");
-    private static final TagKey<Item> GRAINS = register("grains");
-    private static final TagKey<Item> PROTEINS = register("proteins");
-    private static final TagKey<Item> VEGETABLES = register("vegetables");
-    private static final TagKey<Item> SUGARS = register("sugars");
-    public static final TagKey<Item> THIRST = register("thirst");
+    public static final TagKey<Item> FRUITS = register("fruits");
+    public static final TagKey<Item> GRAINS = register("grains");
+    public static final TagKey<Item> PROTEINS = register("proteins");
+    public static final TagKey<Item> VEGETABLES = register("vegetables");
+    public static final TagKey<Item> SUGARS = register("sugars");
 
     public ModItemTagsProvider(PackOutput output, CompletableFuture<HolderLookup.Provider> lookupProvider) {
         super(output, lookupProvider, DietMod.MODID);
@@ -37,9 +36,9 @@ public class ModItemTagsProvider extends ItemTagsProvider {
                 .addTag(SUGARS);
         this.tag(FRUITS)
                 .addTag(Tags.Items.FOODS_FRUIT)
-                .addTag(Tags.Items.FOODS_BERRY);
+                .addTag(Tags.Items.FOODS_BERRY)
+                .add(Items.GLISTERING_MELON_SLICE);
         this.tag(GRAINS)
-                .addTag(Tags.Items.SEEDS)
                 .addTag(Tags.Items.FOODS_BREAD)
                 .addTag(Tags.Items.FOODS_COOKIE)
                 .add(Items.WHEAT);
@@ -49,6 +48,7 @@ public class ModItemTagsProvider extends ItemTagsProvider {
                 .addTag(ItemTags.EGGS)
                 .add(Items.RABBIT_STEW)
                 .add(Items.SPIDER_EYE)
+                .add(Items.FERMENTED_SPIDER_EYE)
                 .add(Items.MILK_BUCKET);
         this.tag(VEGETABLES)
                 .addTag(Tags.Items.FOODS_VEGETABLE)
@@ -56,7 +56,6 @@ public class ModItemTagsProvider extends ItemTagsProvider {
                 .add(Items.POISONOUS_POTATO)
                 .add(Items.DRIED_KELP)
                 .add(Items.SEA_PICKLE)
-                .add(Items.COCOA_BEANS)
                 .addTag(Tags.Items.MUSHROOMS)
                 .add(Items.MUSHROOM_STEW)
                 .add(Items.BEETROOT_SOUP)
@@ -67,8 +66,10 @@ public class ModItemTagsProvider extends ItemTagsProvider {
                 .add(Items.SUGAR)
                 .add(Items.HONEY_BOTTLE)
                 .add(Items.CAKE)
+                .add(Items.BEETROOT)
                 .add(Items.COCOA_BEANS)
-                .add(Items.PUMPKIN_PIE);
+                .add(Items.PUMPKIN_PIE)
+                .add(Items.FERMENTED_SPIDER_EYE);
     }
 
     public static TagKey<Item> register(String name) {

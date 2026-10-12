@@ -1,7 +1,5 @@
 package com.azukii.diet;
 
-import com.azukii.diet.attachments.ModAttachments;
-import com.azukii.diet.component.ModComponents;
 import com.mojang.logging.LogUtils;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -13,9 +11,6 @@ public class DietMod {
     public static final Logger LOGGER = LogUtils.getLogger();
 
     public DietMod(IEventBus modEventBus) {
-        ModAttachments.register(modEventBus);
-        ModComponents.register(modEventBus);
-
-        LOGGER.info("Diet System Loaded");
+        LOGGER.info("Diet System Loaded{}", modEventBus);
     }
 }

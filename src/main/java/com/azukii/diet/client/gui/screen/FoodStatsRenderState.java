@@ -1,4 +1,4 @@
-package com.azukii.diet.gui.screen;
+package com.azukii.diet.client.gui.screen;
 
 public class FoodStatsRenderState {
     private static boolean open = false;
