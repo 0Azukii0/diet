@@ -1,0 +1,39 @@
+All Rights Reserved
+
+Copyright (c) 2026 Azukii
+
+All rights to this software, including the source code, assets, textures,
+models, data files and documentation (together, the "Software"), are reserved
+by the copyright holder.
+
+No part of the Software may be copied, modified, merged, published,
+distributed, sublicensed, sold, or otherwise used, in whole or in part, in
+source or binary form, without the prior explicit written permission of the
+copyright holder.
+
+Unless the copyright holder grants permission in writing, you may NOT:
+
+  1. Redistribute the Software or any derivative work, whether modified or
+     unmodified, on any platform or by any means.
+  2. Include the Software in a modpack or any other bundle intended for
+     distribution without prior written permission.
+  3. Decompile, reverse engineer, or create derivative works based on the
+     Software.
+  4. Reupload the Software to any website, mod hosting platform, or
+     file-sharing service.
+
+Personal use of the officially distributed binary is permitted, solely to play
+the game with the Software installed.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHOR OR COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Third-party components remain under their own licenses. The Gradle wrapper
+files are licensed under the Apache License 2.0, and the project build setup
+derived from the NeoForged MDK template is licensed under the MIT License
+(Copyright (c) 2023 NeoForged project).
